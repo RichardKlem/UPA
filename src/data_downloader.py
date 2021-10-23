@@ -1,4 +1,4 @@
-import requests, os, csv, sys, re
+import requests, os, re
 from bs4 import BeautifulSoup
 
 
@@ -35,6 +35,10 @@ class DataDownloader:
             if not os.path.isfile(self.folder + '/' + file):
                 r = requests.get(self.url + file)
                 open(self.folder + '/' + file, 'wb').write(r.content)
+            # downloads a total of 4.5 GB of data, 
+            # so there is an interruption to test and prevent all data downloads.
+            # Maybe we can download one file, insert the data into DB and after that move on to the next file and delet the previous one
+            break
 
 
 if __name__ == "__main__":
