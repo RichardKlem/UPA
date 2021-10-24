@@ -1,6 +1,7 @@
-from src.data_downloader import DataDownloader
-import src.loader
 import json
+
+import src.loader
+from src.data_downloader import DataDownloader
 
 if __name__ == "__main__":
     Downloader = DataDownloader()
@@ -15,4 +16,3 @@ if __name__ == "__main__":
         if not isinstance(file_data, list):
             file_data = [file_data]
         src.loader.load_data(collection_name=okresy_name, data=file_data)
-
