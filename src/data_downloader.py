@@ -52,8 +52,7 @@ class DataDownloader:
                 # Do not download the csv file if it already exists.
                 if not os.path.isfile(csvFilePath):
                     r = requests.get(self.url + csvFileName)
-                    f = os.open(csvFilePath, os.O_RDWR | os.O_CREAT)
-                    os.write(f, r.content)
+                    open(csvFilePath, 'wb').write(r.content)
 
                 # Fast transforming, but RAM expensive.
                 """
@@ -69,18 +68,17 @@ class DataDownloader:
                 """
 
                 # Slow transforming, but does not run out of RAM (max RAM usage around 6GB).
-                with open(csvFilePath, 'r', encoding='utf-8-sig') as csvFile:
+                with open(csvFilePath, 'r+', encoding='utf-8-sig') as csvFile:
                     reader = csv.DictReader(csvFile)
 
-                    with open(jsonFilePath, 'a') as jsonFile:
+                    with open(jsonFilePath, 'a+') as jsonFile:
                         jsonFile.write("[")
+                        json.dump(reader.__next__(), jsonFile, indent=2)
                         for row in reader:
-                            json.dump(row, jsonFile, indent=2)
                             jsonFile.write(',\n')
-
-                        # Remove trailing comma and EOL.
-                        jsonFile.truncate(jsonFile.tell() - 2)
+                            json.dump(row, jsonFile, indent=2)
                         jsonFile.write("]")
+        print('')  # Print a new line after last processed file.
 
 
 if __name__ == "__main__":

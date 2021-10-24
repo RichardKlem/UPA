@@ -1,6 +1,6 @@
 from pymongo import MongoClient
 
-from mongo_secrets import MONGO_HOST, MONGO_PORT, MONGO_DB, MONGO_USER, MONGO_PASS
+from mongo_secrets import MONGO_HOST, MONGO_DB, MONGO_USER, MONGO_PASS
 
 
 def load_data(collection_name=None, data=None):
@@ -14,3 +14,4 @@ def load_data(collection_name=None, data=None):
 
     collection = db[collection_name]
     collection.insert_many(data)
+    client.close()
