@@ -4,6 +4,7 @@ from mongo_secrets import MONGO_HOST, MONGO_PORT, MONGO_DB, MONGO_USER, MONGO_PA
 
 
 def load_data(collection_name=None, data=None):
+    # Works with MongoDB Cloud. Edit if necessary for your local usage.
     client = MongoClient(
         f"mongodb+srv://{MONGO_USER}:{MONGO_PASS}@{MONGO_HOST}?retryWrites=true&w=majority")
     db = client[MONGO_DB]
