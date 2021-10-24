@@ -34,17 +34,21 @@ class DataDownloader:
         for file in re.findall(r'"url":"[1-9a-z-]*.csv', str(soup)):
             CsvFiles.append(file[7:])
 
-        cnt = 1
+        if number_of_files:
+            number_of_files = min(number_of_files, len(CsvFiles))
+        else:
+            number_of_files = len(CsvFiles)
+        cnt = 0
 
         # Saves csv file into data folder.
         for csvFileName in CsvFiles:
-            if number_of_files and cnt > number_of_files:
+            if cnt >= number_of_files:
                 break
 
             csvFilePath = Path(os.path.join(self.folder, csvFileName))
             jsonFilePath = csvFilePath.with_suffix('.json')
 
-            print(f"\rJSON files created: {cnt}/{len(CsvFiles)}", end='', flush=True)
+            print(f"\rJSON files created: {cnt}/{min(number_of_files, len(CsvFiles))}", end='', flush=True)
             cnt += 1
 
             # Do not download or convert the json file if it already exists.
@@ -78,6 +82,8 @@ class DataDownloader:
                             jsonFile.write(',\n')
                             json.dump(row, jsonFile, indent=2)
                         jsonFile.write("]")
+
+            print(f"\rJSON files created: {cnt}/{number_of_files}", end='', flush=True)
         print('')  # Print a new line after last processed file.
 
 
