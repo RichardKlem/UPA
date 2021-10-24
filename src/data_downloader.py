@@ -48,7 +48,7 @@ class DataDownloader:
             csvFilePath = Path(os.path.join(self.folder, csvFileName))
             jsonFilePath = csvFilePath.with_suffix('.json')
 
-            print(f"\rJSON files created: {cnt}/{min(number_of_files, len(CsvFiles))}", end='', flush=True)
+            print(f"\rJSON files created: {cnt}/{number_of_files}", end='', flush=True)
             cnt += 1
 
             # Do not download or convert the json file if it already exists.
