@@ -34,7 +34,7 @@ if __name__ == "__main__":
 
         # Load data into database.
         for file in files:
-            if file + '.json' in selected_files:
+            if file[:-5] in selected_files:
                 file = Path(os.path.join(root, file))
                 collection_name = file.stem
 

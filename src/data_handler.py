@@ -67,7 +67,6 @@ class DataHandler:
 
         elif csvFileName == self.listOfFiles[2]:
             df = pd.read_csv(csvFilePath, usecols=["datum", "kraj_nuts_kod",
-                                                   "okres_lau_kod", "prirustkovy_pocet_testu_okres",
                                                    "prirustkovy_pocet_testu_kraj"])
             df.to_json(jsonFilePath, orient="records")
 
@@ -82,7 +81,9 @@ class DataHandler:
             df.to_json(jsonFilePath, orient="records")
 
         elif csvFileName == self.listOfFiles[5]:
-            df = pd.read_csv(csvFilePath, usecols=["datum", "kraj_nuts_kod"])
+            df = pd.read_csv(csvFilePath, usecols=["kraj_nuts_kod", "kraj_nazev",
+                                                   "okres_lau_kod", "okres_nazev",
+                                                   "orp_kod"])
             df.to_json(jsonFilePath, orient="records")
 
         elif csvFileName == self.listOfFiles[6]:
