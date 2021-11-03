@@ -26,6 +26,10 @@ Use `python3 main.py` or `make` to run the downloading and inserting into DB.
 
 To clean up the project, type `make clean`.
 
+If you want to run the **whole** process from the beginning again, you must<br>
+delete all data files from your data folder and delete all collections from<br>
+the database. 
+
 ## Behaviour of the script
 It is expected that this code is run to set up the whole database from scratch.<br>
 That means that if there is already CSV file with the specified name, the new one<br>
