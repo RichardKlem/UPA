@@ -57,35 +57,36 @@ class DataHandler:
             df = pd.read_csv(csvFilePath, usecols = ["datum", "vek", "pohlavi",
                                                      "kraj_nuts_kod", "okres_lau_kod"])
             df.to_json(jsonFilePath, orient = "records")
-        
+
         elif csvFileName == self.listOfFiles[1]:
             df = pd.read_csv(csvFilePath, usecols = ["datum", "pocet_hosp"])
             df.to_json(jsonFilePath, orient = "records")
-        
+
         elif csvFileName == self.listOfFiles[2]:
-            df = pd.read_csv(csvFilePath, usecols = ["datum", "kraj_nuts_kod", 
-                                                     "okres_lau_kod", "prirustkovy_pocet_testu_okres",
+            df = pd.read_csv(csvFilePath, usecols = ["datum", "kraj_nuts_kod",
                                                      "prirustkovy_pocet_testu_kraj"])
             df.to_json(jsonFilePath, orient = "records")
-        
+
         elif csvFileName == self.listOfFiles[3]:
             df = pd.read_csv(csvFilePath, usecols = ["datum", "kraj_nuts_kod"])
             df.to_json(jsonFilePath, orient = "records")
-        
+
         elif csvFileName == self.listOfFiles[4]:
-            df = pd.read_csv(csvFilePath, usecols = ["datum", "poradi_davky", "vakcina", 
-                                                     "vekova_skupina", "orp_bydliste_kod", 
+            df = pd.read_csv(csvFilePath, usecols = ["datum", "poradi_davky", "vakcina",
+                                                     "vekova_skupina", "orp_bydliste_kod",
                                                      "kraj_nuts_kod", "kraj_nazev", "pohlavi"])
             df.to_json(jsonFilePath, orient = "records")
-        
+
         elif csvFileName == self.listOfFiles[5]:
-            df = pd.read_csv(csvFilePath, usecols = ["datum", "kraj_nuts_kod"])
+            df = pd.read_csv(csvFilePath, usecols = ["kraj_nuts_kod", "kraj_nazev",
+                                                     "okres_lau_kod", "okres_nazev",
+                                                     "orp_kod"])
             df.to_json(jsonFilePath, orient = "records")
-        
+
         elif csvFileName == self.listOfFiles[6]:
             df = pd.read_csv(csvFilePath, usecols = ["hodnota", "vek_txt", "vuzemi_txt"])
             df.to_json(jsonFilePath, orient = "records")
-        
+
         else:
             df = pd.read_csv(csvFilePath, usecols = ["datum"])
             df.to_json(jsonFilePath, orient = "records")
