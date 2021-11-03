@@ -64,7 +64,6 @@
 	
     \vspace{8 cm}
     \begin{flushleft}
-        Datum vypracování:\hspace{1.62 cm}\textbf{3. listopadu 2021} \linebreak
         Datum odevzdání:\hspace{2 cm}\textbf{3. listopadu 2021} \linebreak
     \end{flushleft}
 
@@ -86,7 +85,7 @@
 \section{Řešení 1. části projektu}
 Cílem 1. části projektu je:
 \begin{itemize}
-    \item analýza zdrojů dat a jejich dílčích datových sad, zejména strukura dat, atributy, datové typy atributů, možnosti propojení datových sad atp.,
+    \item analýza zdrojů dat a jejich dílčích datových sad, zejména struktura dat, atributy, datové typy atributů, možnosti propojení datových sad atp.,
     \item vytvoření systému pro stažení, předzpracování a vložení dat do MongoDB.
 \end{itemize}
 
@@ -126,14 +125,14 @@ Pro vhodné předzpracování dat je dobré znát způsob, jakým se budou data 
 
 \textbf{Vybraný dotaz typu B}:
 \begin{itemize}
-    \item[2)] Vytvořte sérii sloupcových grafů (alespoň 3), které porovnají vývoj různých covidových ukozatelů vámi zvoleného kraje se zbytkem republiky. Jako covidové ukazatele můžete použít: počet nakažených osob, počet hospitalizovaných osob, počet zemřelých, počet očkovaných. Všechny hodnoty uvažujte přepočtené na jednoho obyvatele kraje/republiky. Zobrazte alespoň 12 po sobě jdoucích hodnot (např. hodnoty za poslední rok po měsících).
+    \item[2)] Vytvořte sérii sloupcových grafů (alespoň 3), které porovnají vývoj různých covidových ukazatelů vámi zvoleného kraje se zbytkem republiky. Jako covidové ukazatele můžete použít: počet nakažených osob, počet hospitalizovaných osob, počet zemřelých, počet očkovaných. Všechny hodnoty uvažujte přepočtené na jednoho obyvatele kraje/republiky. Zobrazte alespoň 12 po sobě jdoucích hodnot (např. hodnoty za poslední rok po měsících).
 \end{itemize}
 
     \item[] \textbf{Potřebná data}:
     \begin{itemize}
         \item \textbf{celkový počet nakažených podle kraje} (minimální granularita -- měsíc)
-        \item \textbf{celkový počet zemřelých podle kraje} (minimálná granularita -- měsíc)
-        \item \textbf{celkový počet očkovaných podle kraje} (minimálná granularita -- měsíc)
+        \item \textbf{celkový počet zemřelých podle kraje} (minimální granularita -- měsíc)
+        \item \textbf{celkový počet očkovaných podle kraje} (minimální granularita -- měsíc)
     \end{itemize}
 
 \hspace{1cm}
@@ -185,7 +184,7 @@ Součástí 1. části projektu je i analýza datových sad. Zdroje dat, které 
 
 \subsubsection{COVID-19 v ČR: Otevřené datové sady}
 \label{data1}
-Zdroj je dostupný \href{https://onemocneni-aktualne.mzcr.cz/api/v2/covid-19}{zde}. Celkem poskytuje 15 dílčích datových sad. V tomto řešení projektu preferujeme formát CSV, proto jsou jako odkazy na dálčí datové sady uvedeny odkazy přímo na data ve formátu CSV. Důvod preferování výběru CSV formátu je uveden v kapitole \ref{predzpracovani}.
+Zdroj je dostupný \href{https://onemocneni-aktualne.mzcr.cz/api/v2/covid-19}{zde}. Celkem poskytuje 15 dílčích datových sad. V tomto řešení projektu preferujeme formát CSV, proto jsou jako odkazy na dílčí datové sady uvedeny odkazy přímo na data ve formátu CSV. Důvod preferování výběru CSV formátu je uveden v kapitole \ref{predzpracovani}.
 
 
 \subsubsection*{Přehled osob s prokázanou nákazou dle hlášení krajských hygienických stanic (v2)}
@@ -497,7 +496,7 @@ Potřebné pro dotaz C1 a vlastní dotaz 1.
 
 \subsubsection{Český statistický úřad}
 \label{data3}
-Zdroj je dostupný \href{https://www.czso.cz/csu/czso/obyvatelstvo-podle-petiletych-vekovych-skupin-a-pohlavi-v-krajich-a-okresech}{zde}. Poskytuje pouze 1 dilčí sadu dat.
+Zdroj je dostupný \href{https://www.czso.cz/csu/czso/obyvatelstvo-podle-petiletych-vekovych-skupin-a-pohlavi-v-krajich-a-okresech}{zde}. Poskytuje pouze 1 dílčí sadu dat.
 
 \subsubsection*{Obyvatelstvo podle pětiletých věkových skupin a pohlaví v krajích a okresech}        
 Potřebné pro dotaz C1 a vlastní dotaz 1.
@@ -545,12 +544,17 @@ Potřebné pro dotaz C1 a vlastní dotaz 1.
 \label{predzpracovani}
 Veškeré datové sady, které jsou potřeba pro řešení dotazů v kapitole \ref{dotazy}, jsou k dispozici ve formátu CSV. Tento formát je také paměťově úspornější než formát JSON. Z těchto důvodů jsou veškerá data stahována v CSV a před vložení do databáze transformována na JSON, protože MongoDB přijímá pouze JSON respektive BSON. Při samotné transformaci jsou současně odstraňována nepotřebná data (data, která mají ve sloupci "Užitečné" napsáno "ne").
 
-Stažení, tranformaci i odstranění dat zajišťuje python modul \texttt{src/data\_handler.py}. Pro samotnou transformaci je využito knihovny \texttt{Pandas}. Výhodou této knihovny je rychlost transformace, nevýhodou vysoká spotřeba RAM u delších JSON souborů (až 10 GB). Alternativou by bylo využití knihoven \texttt{csv} a \texttt{json} a iterování přes řádky csv souboru a postupné přídávání do výsledného json souboru. Tento způsob téměř nezatěžuje RAM, ale je mnohonásobně pomalejší. Protože je však možné využít \texttt{swapfile} (na OS Linuxového typu), tak byl zvolen přístup s využitím knihovny \texttt{Pandas}.
+Stažení, transformaci i odstranění dat zajišťuje python modul \texttt{src/data\_handler.py}. Pro samotnou transformaci je využito knihovny \texttt{Pandas}. Výhodou této knihovny je rychlost transformace, nevýhodou vysoká spotřeba RAM u delších JSON souborů (až 10 GB). Alternativou by bylo využití knihoven \texttt{csv} a \texttt{json} a iterování přes řádky csv souboru a postupné přidávaní do výsledného json souboru. Tento způsob téměř nezatěžuje RAM, ale je mnohonásobně pomalejší. Protože je však možné využít \texttt{swapfile} (na OS Linuxového typu), tak byl zvolen přístup s využitím knihovny \texttt{Pandas}.
 
 \subsection{Vložení dat do databáze}
+K připojení do MongoDB databáze je použita třída \texttt{MongoClient} z knihovny \texttt{pymongo}. Je nutné korektně nastavit připojovací řetězec, a to nejlépe konfigurací lokálního souboru \texttt{mongo\_secrets.py}, který lze vytvořit kopií ze stejnojmenného souboru určeného k veřejné distribuci, konkrétně pojmenovaného \texttt{mongo\_secrets.py.dist}.
+Uživatel má v souboru \texttt{loader.py} k dispozici nastavení pro připojení na cloudové řešení, anebo nastavení pro připojené na lokální databázový server.
+Samotné vložení již předzpracovaných dat do databáze je jednoduché a tento úkon obstarává funkce \texttt{load\_data} ze souboru \texttt{loader.py}. 
+Datové soubory respektive datové sady jsou vkládány postupně, vždy jedna po druhé. V tuto chvíli nejsou volány žádné další funkce (například dotazy přímo nad daty v samotné databázi).
+Je vytvořen implicitní index na atribut \texttt{\_id}, jiné indexy nejsou v této fázi projektu použity.
 
 \subsection{Návod na spuštění}
-
+Prerekvizity, specifické vlastnosti chování, potřebná nastavení a návod na spuštění jsou popsány v dokumentaci v souboru \texttt{README.md}, který je umístěn v kořenovém adresáři projektu.
 
 %\section{Řešení 2. části projektu}
 
