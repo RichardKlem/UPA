@@ -187,71 +187,6 @@ Součástí 1. části projektu je i analýza datových sad. Zdroje dat, které 
 \label{data1}
 Zdroj je dostupný \href{https://onemocneni-aktualne.mzcr.cz/api/v2/covid-19}{zde}. Celkem poskytuje 15 dílčích datových sad. V tomto řešení projektu preferujeme formát CSV, proto jsou jako odkazy na dálčí datové sady uvedeny odkazy přímo na data ve formátu CSV. Důvod preferování výběru CSV formátu je uveden v kapitole \ref{predzpracovani}.
 
-\subsubsection*{Základní přehled}
-Data nejsou přímo potřeba pro dotazy, ale mohou se hodit např. pro normalizaci hodnot na jednoho obyvatele.
-\begin{itemize}
-    \item \textbf{formát}: CSV, JSON.
-    \item \textbf{dostupné  \href{https://onemocneni-aktualne.mzcr.cz/api/v2/covid-19/osoby.csv}{zde}}
-    \item \textbf{struktura}
-\end{itemize}
-        \begin{center}
-            \begin{tabular}{ |l|c|c| } 
-                \hline
-                \multicolumn{1}{|c|}{Jméno} & Datový typ & Užitečné \\
-                \hline
-                \hline
-                datum & date & - \\ 
-                \hline
-                provedene\_testy\_celkem & integer & - \\ 
-                \hline
-                potvrzene\_pripady\_celkem & integer & - \\ 
-                \hline
-                aktivni\_pripady & integer & - \\ 
-                \hline
-                vyleceni & integer & - \\ 
-                \hline
-                umrti & integer & - \\ 
-                \hline
-                aktualne\_hospitalizovani & integer & - \\ 
-                \hline
-                provedene\_testy\_vcerejsi\_den & integer & - \\ 
-                \hline
-                potvrzene\_pripady\_vcerejsi\_den & integer & - \\ 
-                \hline
-                potvrzene\_pripady\_dnesni\_den & integer & - \\ 
-                \hline
-                provedene\_testy\_vcerejsi\_den\_datum & date & - \\ 
-                \hline
-                potvrzene\_pripady\_vcerejsi\_den\_datum & date & - \\ 
-                \hline
-                potvrzene\_pripady\_dnesni\_den\_datum & date & - \\ 
-                \hline
-                provedene\_antigenni\_testy\_celkem & integer & - \\ 
-                \hline
-                provedene\_antigenni\_testy\_vcerejsi\_den & integer & - \\ 
-                \hline
-                provedene\_antigenni\_testy\_vcerejsi\_den\_datum & date & - \\ 
-                \hline
-                vykazana\_ockovani\_celkem & integer & - \\ 
-                \hline
-                vykazana\_ockovani\_vcerejsi\_den & integer & - \\ 
-                \hline
-                vykazana\_ockovani\_vcerejsi\_den\_datum & date & - \\ 
-                \hline
-                potvrzene\_pripady\_65\_celkem & integer & - \\ 
-                \hline
-                potvrzene\_pripady\_65\_vcerejsi\_den & integer & - \\ 
-                \hline
-                potvrzene\_pripady\_65\_vcerejsi\_den\_datum & date & - \\ 
-                \hline
-                ockovane\_osoby\_celkem & integer & - \\ 
-                \hline
-                ockovane\_osoby\_vcerejsi\_den & integer & - \\ 
-                \hline
-                ockovane\_osoby\_vcerejsi\_den\_datum & date & - \\ 
-                \hline
-            \end{tabular}
-        \end{center}
 
 \subsubsection*{Přehled osob s prokázanou nákazou dle hlášení krajských hygienických stanic (v2)}
 Potřebné pro dotaz A1, B2. C1, vlastní dotaz 1 a vlastní dotaz 2.
@@ -282,7 +217,8 @@ Potřebné pro dotaz A1, B2. C1, vlastní dotaz 1 a vlastní dotaz 2.
                 \hline
             \end{tabular}
         \end{center}
-        
+
+\newpage        
 \subsubsection*{Přehled vyléčených dle hlášení krajských hygienických stanic}
 Potřebné pro dotaz A1.
 \begin{itemize}
@@ -376,7 +312,7 @@ Potřebné pro dotaz A1.
                 \hline
                 okres\_lau\_kod & string & ne \\ 
                 \hline
-                prirustkovy\_pocet\_testu\_okres & integer & ano \\ 
+                prirustkovy\_pocet\_testu\_okres & integer & ne \\ 
                 \hline
                 kumulativni\_pocet\_testu\_okres & integer & ne \\ 
                 \hline
@@ -500,9 +436,9 @@ Potřebné pro dotaz C1 a vlastní dotaz 1.
                 \hline
                 datum & date & ne \\ 
                 \hline
-                kraj\_nuts\_kod & string & ne \\ 
+                kraj\_nuts\_kod & string & ano \\ 
                 \hline
-                kraj\_nazev & string & ne \\ 
+                kraj\_nazev & string & ano \\ 
                 \hline
                 okres\_lau\_kod & string & ano \\ 
                 \hline
@@ -563,8 +499,7 @@ Potřebné pro dotaz C1 a vlastní dotaz 1.
 \label{data3}
 Zdroj je dostupný \href{https://www.czso.cz/csu/czso/obyvatelstvo-podle-petiletych-vekovych-skupin-a-pohlavi-v-krajich-a-okresech}{zde}. Poskytuje pouze 1 dilčí sadu dat.
 
-\newpage
-\subsubsection*{Epidemiologická charakteristika obcí}        
+\subsubsection*{Obyvatelstvo podle pětiletých věkových skupin a pohlaví v krajích a okresech}        
 Potřebné pro dotaz C1 a vlastní dotaz 1.
 \begin{itemize}
     \item \textbf{formát}: CSV.
