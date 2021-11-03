@@ -3,20 +3,25 @@ import os
 from pathlib import Path
 
 import src.loader
-from src.data_downloader import DataDownloader
+from src.data_handler import DataHandler
 
 if __name__ == "__main__":
     data_folder = 'data'
     data_file_names = 'data_file_names.txt'
+    listOfFiles = []
 
     skip_download = False
     skip_insert = False
-    number_of_files = None
+
+    # gets the file that needs to be downloaded
+    with open("data_file_names.txt", "r") as a_file:
+        for line in a_file:
+            listOfFiles.append(line.strip())
 
     # Download data.
     if not skip_download:
-        Downloader = DataDownloader(folder=data_folder)
-        Downloader.download(number_of_files=number_of_files)
+        Handler = DataHandler(folder=data_folder, listOfFiles=listOfFiles)
+        Handler.download()
 
     # Insert data into database.
     if not skip_insert:
