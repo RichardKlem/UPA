@@ -1,0 +1,625 @@
+\documentclass[12pt]{article}
+\usepackage[czech]{babel}
+\usepackage{natbib}
+\usepackage{url}
+\usepackage[utf8x]{inputenc}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\graphicspath{{images/}}
+\usepackage{parskip}
+\usepackage{fancyhdr}
+\usepackage{vmargin}
+\setmarginsrb{3 cm}{2.5 cm}{3 cm}{2.5 cm}{1 cm}{1.5 cm}{1 cm}{1.5 cm}
+\usepackage{fancyhdr}
+\usepackage{caption}
+\usepackage{array}
+\newcolumntype{?}[1]{!{\vrule width #1}}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=red,
+    filecolor=red,
+    urlcolor=blue,
+    citecolor=red,
+    linktoc=none
+    }
+
+							
+\makeatletter
+\let\thetitle\@title
+
+
+\makeatother
+
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{\theauthor}
+\lhead{\thetitle}
+\cfoot{\thepage}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{titlepage}
+	\centering
+    \includegraphics[scale = 0.35]{FIT_logo.png}\\[1.0 cm]	% University Logo
+    \textsc{\LARGE Projektová dokumentace} \\[2.0 cm]
+    \textsc{\LARGE Implementace systému pro získání, zpracování a ukládání dat} \\[1 cm]
+    \textbf{\LARGE COVID-19}
+	\rule{\linewidth}{0.2 mm} \\[0.4 cm]
+	{ \huge \bfseries \thetitle}\\
+	
+	\vspace{1 cm}
+	\begin{minipage}{0.45\textwidth}
+		
+            \newline
+			\begin{flushleft} 
+			\emph{Autoři:} \\
+			\textbf{Tomáš Beránek (xberan46)} \linebreak
+			\textbf{Daniel Kamenický (xkamen21)} \linebreak
+			\textbf{Richard Klem (xklemr00)} \linebreak
+			
+			% Your Student Number
+		    \end{flushleft}
+	\end{minipage}\\[0 cm]
+	
+    \vspace{8 cm}
+    \begin{flushleft}
+        Datum vypracování:\hspace{1.62 cm}\textbf{1. listopadu 2021} \linebreak
+        Datum odevzdání:\hspace{2 cm}\textbf{3. listopadu 2021} \linebreak
+    \end{flushleft}
+
+	\vfill
+    \fancyhf{}
+    \fancyhead[R]{3. listopadu 2021}	
+\end{titlepage}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\renewcommand{\contentsname}{Obsah}
+\tableofcontents
+\pagebreak
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+\afterpage{\cfoot{\thepage }}
+
+\section{Řešení 1. části projektu}
+Cílem 1. části projektu je:
+\begin{itemize}
+    \item analýza zdrojů dat a jejich dílčích datových sad, zejména strukura dat, atributy, datové typy atributů, možnosti propojení datových sad atp.,
+    \item vytvoření systému pro stažení, předzpracování a vložení dat do MongoDB.
+\end{itemize}
+
+\subsection{Volba dotazů ze zadání}
+\label{dotazy}
+Pro vhodné předzpracování dat je dobré znát způsob, jakým se budou data využívat. Na základě této informace je pak možné například -- identifikovat nepotřebná data, která lze v předzpracování odstranit, zvolit vhodný databázový systém, upravit formát atributů v předzpracování atp. Cílem 2. části projektu je realizace dvou dotazů typu A, jednoho dotazu typu B, dvou vlastních dotazů a příprava dat pro jednu z dolovacích úloh typu C.
+
+\textbf{Vybrané dotazy typu A}:
+\begin{itemize}
+    \item[1)] Vytvořte čárový (spojnicový) graf zobrazující vývoj covidové situace po měsících pomocí následujících hodnot: počet nově nakažených za měsíc, počet nově vyléčených za měsíc, počet nově hospitalizovaných osob za měsíc, počet provedených testů za měsíc. Pokud nebude výsledný graf dobře čitelný, zvažte logaritmické měřítko, nebo rozdělte hodnoty do více grafů.
+    
+    \item[] \textbf{Potřebná data}:
+    \begin{itemize}
+        \item \textbf{počet nově nakažených} (minimální granularita -- měsíc)
+        \item \textbf{počet nově vyléčených} (minimální granularita -- měsíc)
+        \item \textbf{počet nově hospitalizovaných} (minimální granularita -- měsíc)
+        \item \textbf{počet nově provedených testů} (minimální granularita -- měsíc)
+    \end{itemize}
+    
+    \hspace{1cm}
+    
+    \item[3)] Vytvořte sérii sloupcových grafů, které zobrazí:
+    \begin{itemize}
+        \item počty provedených očkování v jednotlivých krajích (celkový počet od začátku očkování),
+        \item počty provedených očkování jako v předchozím bodě navíc rozdělené podle pohlaví. Diagram může mít např. dvě části pro jednotlivá pohlaví,
+        \item počty provedených očkování, ještě dále rozdělené dle věkové skupiny. Pro potřeby tohoto diagramu postačí 3 věkové skupiny (0-24 let, 25-59 let, nad~59).
+    \end{itemize}
+
+    \item[] \textbf{Potřebná data}:
+    \begin{itemize}
+        \item \textbf{počet provedených očkovaní u můžu/žen v daném kraji} (minimální granularita -- celkem)
+        \item \textbf{počet provedených očkovaní podle věku v daném kraji} (minimální granularita počtu očkování -- celkem, minimální granularita věku -- 0-24 let, 25-59 let a nad 59 let)
+    \end{itemize}
+\end{itemize}
+
+\hspace{1cm}
+
+\textbf{Vybraný dotaz typu B}:
+\begin{itemize}
+    \item[2)] Vytvořte sérii sloupcových grafů (alespoň 3), které porovnají vývoj různých covidových ukozatelů vámi zvoleného kraje se zbytkem republiky. Jako covidové ukazatele můžete použít: počet nakažených osob, počet hospitalizovaných osob, počet zemřelých, počet očkovaných. Všechny hodnoty uvažujte přepočtené na jednoho obyvatele kraje/republiky. Zobrazte alespoň 12 po sobě jdoucích hodnot (např. hodnoty za poslední rok po měsících).
+\end{itemize}
+
+    \item[] \textbf{Potřebná data}:
+    \begin{itemize}
+        \item \textbf{celkový počet nakažených podle kraje} (minimální granularita -- měsíc)
+        \item \textbf{celkový počet zemřelých podle kraje} (minimálná granularita -- měsíc)
+        \item \textbf{celkový počet očkovaných podle kraje} (minimálná granularita -- měsíc)
+    \end{itemize}
+
+\hspace{1cm}
+
+\textbf{Vlastní dotazy} zahrnující data alespoň ze dvou zdrojů:
+\begin{itemize}
+    \item[1)] Vytvořte sloupcový graf rozdělený podle věku (po 5letých intervalech) obyvatelstva ve vybraném okresu. Každý sloupec vyjadřuje kolik procent obyvatelstva z dané věkové skupiny dostalo COVID-19 za poslední rok (neuvažujte duplicity).
+    
+    \item[] \textbf{Potřebná data}:
+    \begin{itemize}
+        \item \textbf{počet nakažených podle věku a okresu} (minimální granularita věku -- 5leté intervaly)
+        \item \textbf{počet obyvatel podle věku a okresu} (minimální granularita věku -- 5leté intervaly)
+    \end{itemize}
+    
+    \item[2)] Vytvořte graf, který ukazuje aktuální počet nakažených mužů a žen od začátku pandemie COVID-19.
+    
+    \item[] \textbf{Potřebná data}:
+    \begin{itemize}
+        \item \textbf{počet nakažených podle pohlaví } (minimální granularita -- měsíc)
+    \end{itemize}
+\end{itemize}
+
+\hspace{1cm}
+
+\textbf{Vybraná dolovací úloha typu C}:
+\begin{itemize}
+    \item[1)] Hledání skupin podobných okresů z hlediska vývoje covidu a věkového složení obyvatel.
+    \begin{itemize}
+        \item Atributy: počet nakažených za poslední 4 čtvrtletí, počet očkovaných za poslední 4 čtvrtletí, počet obyvatel ve věkové skupině 0..14 let, počet obyvatel ve věkové skupině 15 - 59, počet obyvatel nad 59 let.
+        \item Pro potřeby projektu vyberte libovolně 50 okresů, pro které najdete potřebné hodnoty (můžete např. využít nějaký žebříček 50 nejlidnatějších okresů v ČR).
+    \end{itemize}
+    
+    \item[] \textbf{Potřebná data}:
+    \begin{itemize}
+        \item \textbf{počet nakažených podle věku a okresů} (minimální granularita věku -- 0-24 let, 25-59 let a nad 59 let, minimální granularita datumu -- 3 měsíce)
+        \item \textbf{počet očkovaných podle věku a okresů} (minimální granularita věku -- 0-24 let, 25-59 let a nad 59 let, minimální granularita datumu -- 3 měsíce)
+        \item \textbf{počty obyvatel v jednotlivých okresech podle věku} (minimální granularita věku -- 0-24 let, 25-59 let a nad 59 let)
+    \end{itemize}
+\end{itemize}
+
+\newpage
+\subsection{Analýza datových sad}
+Součástí 1. části projektu je i analýza datových sad. Zdroje dat, které je možno využít jsou definovány zadáním. Každý zdroj poskytuje řadu dílčích datových sad. Následující seznam obsahuje pouze datové sady, které poskytují potřebná data uvedená v kapitole \ref{dotazy}. Pro každou dílčí datovou sadu jsou uvedeny informace:
+\begin{itemize}
+    \item \textbf{URL} -- ze které je možno datovou sadu stáhnout,
+    \item \textbf{formát} -- v jakém formátu jsou data uložena např. CSV, JSON, HTML atp.,
+    \item \textbf{struktura} -- uvedeno tabulkou.
+\end{itemize}
+
+\subsubsection{COVID-19 v ČR: Otevřené datové sady}
+\label{data1}
+Zdroj je dostupný \href{https://onemocneni-aktualne.mzcr.cz/api/v2/covid-19}{zde}. Celkem poskytuje 15 dílčích datových sad. V tomto řešení projektu preferujeme formát CSV, proto jsou jako odkazy na dálčí datové sady uvedeny odkazy přímo na data ve formátu CSV. Důvod preferování výběru CSV formátu je uveden v kapitole \ref{predzpracovani}.
+
+\subsubsection*{Základní přehled}
+Data nejsou přímo potřeba pro dotazy, ale mohou se hodit např. pro normalizaci hodnot na jednoho obyvatele.
+\begin{itemize}
+    \item \textbf{formát}: CSV, JSON.
+    \item \textbf{dostupné  \href{https://onemocneni-aktualne.mzcr.cz/api/v2/covid-19/osoby.csv}{zde}}
+    \item \textbf{struktura}
+\end{itemize}
+        \begin{center}
+            \begin{tabular}{ |l|c|c| } 
+                \hline
+                \multicolumn{1}{|c|}{Jméno} & Datový typ & Užitečné \\
+                \hline
+                \hline
+                datum & date & - \\ 
+                \hline
+                provedene\_testy\_celkem & integer & - \\ 
+                \hline
+                potvrzene\_pripady\_celkem & integer & - \\ 
+                \hline
+                aktivni\_pripady & integer & - \\ 
+                \hline
+                vyleceni & integer & - \\ 
+                \hline
+                umrti & integer & - \\ 
+                \hline
+                aktualne\_hospitalizovani & integer & - \\ 
+                \hline
+                provedene\_testy\_vcerejsi\_den & integer & - \\ 
+                \hline
+                potvrzene\_pripady\_vcerejsi\_den & integer & - \\ 
+                \hline
+                potvrzene\_pripady\_dnesni\_den & integer & - \\ 
+                \hline
+                provedene\_testy\_vcerejsi\_den\_datum & date & - \\ 
+                \hline
+                potvrzene\_pripady\_vcerejsi\_den\_datum & date & - \\ 
+                \hline
+                potvrzene\_pripady\_dnesni\_den\_datum & date & - \\ 
+                \hline
+                provedene\_antigenni\_testy\_celkem & integer & - \\ 
+                \hline
+                provedene\_antigenni\_testy\_vcerejsi\_den & integer & - \\ 
+                \hline
+                provedene\_antigenni\_testy\_vcerejsi\_den\_datum & date & - \\ 
+                \hline
+                vykazana\_ockovani\_celkem & integer & - \\ 
+                \hline
+                vykazana\_ockovani\_vcerejsi\_den & integer & - \\ 
+                \hline
+                vykazana\_ockovani\_vcerejsi\_den\_datum & date & - \\ 
+                \hline
+                potvrzene\_pripady\_65\_celkem & integer & - \\ 
+                \hline
+                potvrzene\_pripady\_65\_vcerejsi\_den & integer & - \\ 
+                \hline
+                potvrzene\_pripady\_65\_vcerejsi\_den\_datum & date & - \\ 
+                \hline
+                ockovane\_osoby\_celkem & integer & - \\ 
+                \hline
+                ockovane\_osoby\_vcerejsi\_den & integer & - \\ 
+                \hline
+                ockovane\_osoby\_vcerejsi\_den\_datum & date & - \\ 
+                \hline
+            \end{tabular}
+        \end{center}
+
+\subsubsection*{Přehled osob s prokázanou nákazou dle hlášení krajských hygienických stanic (v2)}
+Potřebné pro dotaz A1, B2. C1, vlastní dotaz 1 a vlastní dotaz 2.
+\begin{itemize}
+    \item \textbf{formát}: CSV, JSON.
+    \item \textbf{dostupné  \href{https://onemocneni-aktualne.mzcr.cz/api/v2/covid-19/osoby.csv}{zde}}
+    \item \textbf{struktura}:
+\end{itemize}
+        \begin{center}
+            \begin{tabular}{ |l|c|c| } 
+                \hline
+                \multicolumn{1}{|c|}{Jméno} & Datový typ & Užitečné \\
+                \hline
+                \hline
+                datum & date & ano \\ 
+                \hline
+                vek & integer & ano \\ 
+                \hline
+                pohlavi & string & ano \\ 
+                \hline
+                kraj\_nuts\_kod & string & ano \\ 
+                \hline
+                okres\_lau\_kod & string & ano \\ 
+                \hline
+                nakaza\_v\_zahranici & boolean & ne \\ 
+                \hline
+                nakaza\_zeme\_csu\_kod & string & ne \\ 
+                \hline
+            \end{tabular}
+        \end{center}
+        
+\subsubsection*{Přehled vyléčených dle hlášení krajských hygienických stanic}
+Potřebné pro dotaz A1.
+\begin{itemize}
+    \item \textbf{formát}: CSV, JSON.
+    \item \textbf{dostupné  \href{https://onemocneni-aktualne.mzcr.cz/api/v2/covid-19/vyleceni.csv}{zde}}
+    \item \textbf{struktura}:
+\end{itemize}
+        \begin{center}
+            \begin{tabular}{ |l|c|c| } 
+                \hline
+                \multicolumn{1}{|c|}{Jméno} & Datový typ & Užitečné \\
+                \hline
+                \hline
+                datum & date & ano \\ 
+                \hline
+                vek & integer & ne \\ 
+                \hline
+                pohlavi & string & ne \\ 
+                \hline
+                kraj\_nuts\_kod & string & ne \\ 
+                \hline
+                okres\_lau\_kod & string & ne \\ 
+                \hline
+            \end{tabular}
+        \end{center}
+        
+\subsubsection*{Přehled hospitalizací}
+Potřebné pro dotaz A1.
+\begin{itemize}
+    \item \textbf{formát}: CSV, JSON.
+    \item \textbf{dostupné \href{https://onemocneni-aktualne.mzcr.cz/api/v2/covid-19/hospitalizace.csv}{zde}}
+    \item \textbf{struktura}:
+\end{itemize}
+        \begin{center}
+            \begin{tabular}{ |l|c|c| } 
+                \hline
+                \multicolumn{1}{|c|}{Jméno} & Datový typ & Užitečné \\
+                \hline
+                \hline
+                datum & date & ano \\ 
+                \hline
+                pacient\_prvni\_zaznam & integer & ne \\ 
+                \hline
+                kum\_pacient\_prvni\_zaznam & integer & ne \\ 
+                \hline
+                pocet\_hosp & integer & ano \\ 
+                \hline
+                stav\_bez\_priznaku & integer & ne \\ 
+                \hline
+                stav\_lehky & integer & ne \\ 
+                \hline
+                stav\_stredni & integer & ne \\ 
+                \hline
+                stav\_tezky & integer & ne \\ 
+                \hline
+                jip & integer & ne \\ 
+                \hline
+                kyslik & integer & ne \\ 
+                \hline
+                hfno & integer & ne \\ 
+                \hline
+                upv & integer & ne \\ 
+                \hline
+                ecmo & integer & ne \\ 
+                \hline
+                tezky\_upv\_ecmo & integer & ne \\ 
+                \hline
+                umrti & integer & ne \\ 
+                \hline
+                kum\_umrti & integer & ne \\ 
+                \hline
+            \end{tabular}
+        \end{center}
+        
+\subsubsection*{Celkový (kumulativní) počet provedených testů podle krajů a okresů ČR}
+Potřebné pro dotaz A1.
+\begin{itemize}
+    \item \textbf{formát}: CSV, JSON.
+    \item \textbf{dostupné  \href{https://onemocneni-aktualne.mzcr.cz/api/v2/covid-19/kraj-okres-testy.csv}{zde}}
+    \item \textbf{struktura}:
+\end{itemize}
+        \begin{center}
+            \begin{tabular}{ |l|c|c| } 
+                \hline
+                \multicolumn{1}{|c|}{Jméno} & Datový typ & Užitečné \\
+                \hline
+                \hline
+                datum & date & ano \\ 
+                \hline
+                kraj\_nuts\_kod & string & ano \\ 
+                \hline
+                okres\_lau\_kod & string & ne \\ 
+                \hline
+                prirustkovy\_pocet\_testu\_okres & integer & ano \\ 
+                \hline
+                kumulativni\_pocet\_testu\_okres & integer & ne \\ 
+                \hline
+                prirustkovy\_pocet\_testu\_kraj & integer & ano \\ 
+                \hline
+                kumulativni\_pocet\_testu\_kraj & integer & ne \\ 
+                \hline
+                prirustkovy\_pocet\_prvnich\_testu\_okres & integer & ne \\ 
+                \hline
+                kumulativni\_pocet\_prvnich\_testu\_okres & integer & ne \\ 
+                \hline
+                prirustkovy\_pocet\_prvnich\_testu\_kraj & integer & ne \\ 
+                \hline
+                kumulativni\_pocet\_prvnich\_testu\_kraj & integer & ne \\ 
+                \hline
+            \end{tabular}
+        \end{center}
+
+\subsubsection*{Přehled vykázaných očkování podle profesí (očkovací místo, bydliště očkovaného)}
+Potřebné pro dotaz A3, B2 a C1.
+\begin{itemize}
+    \item \textbf{formát}: CSV, JSON.
+    \item \textbf{dostupné \href{https://onemocneni-aktualne.mzcr.cz/api/v2/covid-19/ockovani-profese.csv}{zde}}
+    \item \textbf{struktura}:
+\end{itemize}
+        \begin{center}
+            \begin{tabular}{ |l|c|c| } 
+                \hline
+                \multicolumn{1}{|c|}{Jméno} & Datový typ & Užitečné \\
+                \hline
+                \hline
+                datum & date & ano \\ 
+                \hline
+                vakcina & string & ano \\ 
+                \hline
+                kraj\_nuts\_kod & string & ano \\ 
+                \hline
+                kraj\_nazev & string & ano \\ 
+                \hline
+                zarizeni\_kod & string & ne \\ 
+                \hline
+                zarizeni\_nazev & string & ne \\ 
+                \hline
+                poradi\_davky & integer & ano \\ 
+                \hline
+                indikace\_zdravotnik & boolean & ne \\ 
+                \hline
+                indikace\_socialni\_sluzby & boolean & ne \\ 
+                \hline
+                indikace\_ostatni & boolean & ne \\ 
+                \hline
+                indikace\_pedagog & boolean & ne \\ 
+                \hline
+                indikace\_skolstvi\_ostatni & boolean & ne \\ 
+                \hline
+                indikace\_bezpecnostni\_infrastruktura & boolean & ne \\ 
+                \hline
+                indikace\_chronicke\_onemocneni & boolean & ne \\ 
+                \hline
+                vekova\_skupina & string & ano \\ 
+                \hline
+                orp\_bydliste & string & ne \\ 
+                \hline
+                orp\_bydliste\_kod & integer & ano \\ 
+                \hline
+                prioritni\_skupina\_kod & integer & ne \\ 
+                \hline
+                pohlavi & string & ano \\ 
+                \hline
+                zrizovatel\_kod & integer & ne \\ 
+                \hline
+                zrizovatel\_nazev & string & ne \\ 
+                \hline
+                vakcina\_kod & string & ne \\ 
+                \hline
+                ukoncujici\_davka & boolean & ne \\ 
+                \hline
+            \end{tabular}
+        \end{center}
+   
+\subsubsection*{Přehled úmrtí dle hlášení krajských hygienických stanic}
+Potřebné pro dotaz B2.
+\begin{itemize}
+    \item \textbf{formát}: CSV, JSON.
+    \item \textbf{dostupné \href{https://onemocneni-aktualne.mzcr.cz/api/v2/covid-19/umrti.csv}{zde}}
+    \item \textbf{struktura}:
+\end{itemize}
+        \begin{center}
+            \begin{tabular}{ |l|c|c| } 
+                \hline
+                \multicolumn{1}{|c|}{Jméno} & Datový typ & Užitečné \\
+                \hline
+                \hline
+                datum & date & ano \\ 
+                \hline
+                vek & string & ne \\ 
+                \hline
+                pohlavi & string & ne \\ 
+                \hline
+                kraj\_nuts\_kod & string & ano \\ 
+                \hline
+                okres\_lau\_kod & string & ne \\ 
+                \hline
+            \end{tabular}
+        \end{center} 
+
+\subsubsection*{Epidemiologická charakteristika obcí}        
+Potřebné pro dotaz C1 a vlastní dotaz 1.
+\begin{itemize}
+    \item \textbf{formát}: CSV, JSON.
+    \item \textbf{dostupné  \href{https://onemocneni-aktualne.mzcr.cz/api/v2/covid-19/obce.csv}{zde}}
+    \item \textbf{struktura}:
+\end{itemize}
+        \begin{center}
+            \begin{tabular}{ |l|c|c| } 
+                \hline
+                \multicolumn{1}{|c|}{Jméno} & Datový typ & Užitečné \\
+                \hline
+                \hline
+                den & string & ne \\ 
+                \hline
+                datum & date & ne \\ 
+                \hline
+                kraj\_nuts\_kod & string & ne \\ 
+                \hline
+                kraj\_nazev & string & ne \\ 
+                \hline
+                okres\_lau\_kod & string & ano \\ 
+                \hline
+                okres\_nazev & string & ano \\ 
+                \hline
+                orp\_kod & integer & ano \\ 
+                \hline
+                orp\_nazev & string & ne \\ 
+                \hline
+                obec\_kod & integer & ne \\ 
+                \hline
+                obec\_nazev & string & ne \\ 
+                \hline
+                nove\_pripady & integer & ne \\ 
+                \hline
+                aktivni\_pripady & integer & ne \\ 
+                \hline
+                nove\_pripady\_65 & integer & ne \\ 
+                \hline
+                nove\_pripady\_7\_dni & integer & ne \\ 
+                \hline
+                nove\_pripady\_14\_dni & integer & ne \\ 
+                \hline
+            \end{tabular}
+        \end{center} 
+
+%Potřebná data pro dotaz A1
+%https://onemocneni-aktualne.mzcr.cz/api/v2/covid-19/osoby.min.json
+%https://onemocneni-aktualne.mzcr.cz/api/v2/covid-19/vyleceni.min.json
+%https://onemocneni-aktualne.mzcr.cz/api/v2/covid-19/hospitalizace.min.json --pocet nove hositalizovanych
+%https://onemocneni-aktualne.mzcr.cz/api/v2/covid-19/kraj-okres-testy.min.json kumulativni pocet testu
+
+%Potřebná data pro dotaz A3
+%https://onemocneni-aktualne.mzcr.cz/api/v2/covid-19/ockovani-profese.min.json
+
+%Potřebná data pro dotaz B2
+%https://onemocneni-aktualne.mzcr.cz/api/v2/covid-19/osoby.min.json
+%https://onemocneni-aktualne.mzcr.cz/api/v2/covid-19/ockovani-profese.min.json
+%https://onemocneni-aktualne.mzcr.cz/api/v2/covid-19/umrti.min.json
+
+
+%Potřebná data pro dotaz pro C1
+%https://www.czso.cz/documents/62353418/143522504/130142-21schema043021.json/07ce4a89-97ab-4da9-a8f8-c7c403d9c4b9?version=1.1  -- pocty obyvatel podle vekovych skupin v okresech a krajich
+%https://onemocneni-aktualne.mzcr.cz/api/v2/covid-19/ockovani-profese.min.json -- zjisteni ockovanych lidi
+%https://onemocneni-aktualne.mzcr.cz/api/v2/covid-19/osoby.min.json 
+%https://onemocneni-aktualne.mzcr.cz/api/v2/covid-19/obce.min.json
+
+%Vlastni dotaz1
+%https://onemocneni-aktualne.mzcr.cz/api/v2/covid-19/osoby.min.json
+%https://www.czso.cz/documents/62353418/143522504/130142-21schema043021.json/07ce4a89-97ab-4da9-a8f8-c7c403d9c4b9?version=1.1
+%https://onemocneni-aktualne.mzcr.cz/api/v2/covid-19/obce.min.json
+
+%Vlastni dotaz2
+%https://onemocneni-aktualne.mzcr.cz/api/v2/covid-19/osoby.min.json
+
+
+\subsubsection{Český statistický úřad}
+\label{data3}
+Zdroj je dostupný \href{https://www.czso.cz/csu/czso/obyvatelstvo-podle-petiletych-vekovych-skupin-a-pohlavi-v-krajich-a-okresech}{zde}. Poskytuje pouze 1 dilčí sadu dat.
+
+\newpage
+\subsubsection*{Epidemiologická charakteristika obcí}        
+Potřebné pro dotaz C1 a vlastní dotaz 1.
+\begin{itemize}
+    \item \textbf{formát}: CSV.
+    \item \textbf{dostupné  \href{https://www.czso.cz/documents/62353418/143522504/130142-21data043021.csv/760fab9c-d079-4d3a-afed-59cbb639e37d?version=1.1}{zde}}
+    \item \textbf{struktura}:
+\end{itemize}
+        \begin{center}
+            \begin{tabular}{ |l|c|c| } 
+                \hline
+                \multicolumn{1}{|c|}{Jméno} & Datový typ & Užitečné \\
+                \hline
+                \hline
+                idhod & string & ne \\ 
+                \hline
+                hodnota & integer & ano \\ 
+                \hline
+                stapro\_kod & string & ne \\ 
+                \hline
+                pohlavi\_cis & string & ne \\ 
+                \hline
+                pohlavi\_kod & string & ne \\ 
+                \hline
+                vek\_cis & string & ne \\ 
+                \hline
+                vek\_kod & string & ne \\ 
+                \hline
+                vuzemi\_cis & string & ne \\ 
+                \hline
+                vuzemi\_kod & string & ne \\ 
+                \hline
+                casref\_do & date & ne \\ 
+                \hline
+                pohlavi\_txt & string & ne \\ 
+                \hline
+                vek\_txt & string & ano \\ 
+                \hline
+                vuzemi\_txt & string & ano \\ 
+                \hline
+            \end{tabular}
+        \end{center} 
+
+\subsection{Předzpracování dat}
+\label{predzpracovani}
+Veškeré datové sady, které jsou potřeba pro řešení dotazů v kapitole \ref{dotazy}, jsou k dispozici ve formátu CSV. Tento formát je také paměťově úspornější než formát JSON. Z těchto důvodů jsou veškerá data stahována v CSV a před vložení do databáze transformována na JSON, protože MongoDB přijímá pouze JSON respektive BSON. Při samotné transformaci jsou současně odstraňována nepotřebná data (data, která mají ve sloupci "Užitečné" napsáno "ne").
+
+Stažení, tranformaci i odstranění dat zajišťuje python modul \texttt{src/data\_handler.py}. Pro samotnou transformaci je využito knihovny \texttt{Pandas}. Výhodou této knihovny je rychlost transformace, nevýhodou vysoká spotřeba RAM u delších JSON souborů (až 10 GB). Alternativou by bylo využití knihoven \texttt{csv} a \texttt{json} a iterování přes řádky csv souboru a postupné přídávání do výsledného json souboru. Tento způsob téměř nezatěžuje RAM, ale je mnohonásobně pomalejší. Protože je však možné využít \texttt{swapfile} (na OS Linuxového typu), tak byl zvolen přístup s využitím knihovny \texttt{Pandas}.
+
+\subsection{Vložení dat do databáze}
+
+\subsection{Návod na spuštění}
+
+
+%\section{Řešení 2. části projektu}
+
+%\newpage
+%\bibliography{UPA-bib} 
+%\bibliographystyle{bib-styles/czplain}
+\end{document}
