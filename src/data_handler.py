@@ -58,7 +58,10 @@ class DataHandler:
             if not os.path.isfile(jsonFilePath):
                 # Do not download the csv file if it already exists.
                 if not os.path.isfile(csvFilePath):
-                    r = requests.get(self.url + csvFileName+".csv")
+                    if csvFileName == "130142-21data043021":
+                        r = requests.get("https://www.czso.cz/documents/62353418/143522504/130142-21data043021.csv/760fab9c-d079-4d3a-afed-59cbb639e37d?version=1.1")
+                    else:
+                        r = requests.get(self.url + csvFileName+".csv")
                     open(csvFilePath, 'wb').write(r.content)
 
                 # Fast transforming, but RAM expensive.
@@ -73,7 +76,7 @@ class DataHandler:
 
                     data.to_json(jsonFilePath, orient = "records", indent=4)
                 """
-                
+
                 # Slow transforming, but does not run out of RAM (max RAM usage around 6GB).
                 """
                 with open(csvFilePath, 'r+', encoding='utf-8-sig') as csvFile:
@@ -89,16 +92,15 @@ class DataHandler:
                 """
 
                 if csvFileName == self.listOfFiles[0]:
-                    print(csvFilePath)
                     df = pd.read_csv(csvFilePath, usecols = ["datum", "vek", "pohlavi", "kraj_nuts_kod", "okres_lau_kod"])
-                    df.to_json(jsonFilePath)
+                    df.to_json(jsonFilePath, orient = "records")
                 elif csvFileName == self.listOfFiles[1]:
                     df = pd.read_csv(csvFilePath, usecols = ["datum", "pocet_hosp"])
-                    df.to_json(jsonFilePath)
+                    df.to_json(jsonFilePath, orient = "records")
                 elif csvFileName == self.listOfFiles[2]:
                     df = pd.read_csv(csvFilePath, usecols = ["datum", "kraj_nuts_kod", "okres_lau_kod", "prirustkovy_pocet_testu_okres", "prirustkovy_pocet_testu_kraj"])
-                    df.to_json(jsonFilePath)
-                # elif csvFileName == self.listOfFiles[3]: 
+                    df.to_json(jsonFilePath, orient = "records")
+                # elif csvFileName == self.listOfFiles[3]:
                 # ockovani-zakladni-prehled
                 #     df = pd.read_csv(csvFilePath, usecols = ["poradi_davky", "vakcina", "vekova_skupina", "orp_bydliste_kod"])
                 #     df.to_json(jsonFilePath)
@@ -108,19 +110,19 @@ class DataHandler:
                 # df.to_json(jsonFilePath)
                 elif csvFileName == self.listOfFiles[3]:
                     df = pd.read_csv(csvFilePath, usecols = ["datum", "kraj_nuts_kod"])
-                    df.to_json(jsonFilePath)
+                    df.to_json(jsonFilePath, orient = "records")
                 elif csvFileName == self.listOfFiles[4]:
-                    df = pd.read_csv(csvFilePath, usecols = ["poradi_davky", "vakcina", "vekova_skupina", "orp_bydliste_kod", "kraj_nuts_kod", "kraj_nazev", "pohlavi"])
-                    df.to_json(jsonFilePath)
+                    df = pd.read_csv(csvFilePath, usecols = ["datum", "poradi_davky", "vakcina", "vekova_skupina", "orp_bydliste_kod", "kraj_nuts_kod", "kraj_nazev", "pohlavi"])
+                    df.to_json(jsonFilePath, orient = "records")
                 elif csvFileName == self.listOfFiles[5]:
                     df = pd.read_csv(csvFilePath, usecols = ["datum", "kraj_nuts_kod"])
-                    df.to_json(jsonFilePath)
+                    df.to_json(jsonFilePath, orient = "records")
                 elif csvFileName == self.listOfFiles[6]:
-                    df = pd.read_csv(csvFilePath, usecols = ["hodnota", "vet_txt", "vuzemi_txt"])
-                    df.to_json(jsonFilePath)
+                    df = pd.read_csv(csvFilePath, usecols = ["hodnota", "vek_txt", "vuzemi_txt"])
+                    df.to_json(jsonFilePath, orient = "records")
                 else:
                     df = pd.read_csv(csvFilePath, usecols = ["datum"])
-                    df.to_json(jsonFilePath)
+                    df.to_json(jsonFilePath, orient = "records")
 
             # print(f"\rJSON files created: {cnt}/{numberOfFiles}", end='', flush=True)
         # print('')  # Print a new line after last processed file.
