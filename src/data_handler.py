@@ -16,7 +16,6 @@ class DataHandler:
     Module: download
     Function: downloads csv files with data from the page
     """
-
     def download(self):
         headers = {'User-Agent': 'Mozilla/5.0', }
 
@@ -24,8 +23,7 @@ class DataHandler:
 
         # Saves csv file into data folder.
         for csvFileName in self.listOfFiles:
-            csvFilePath = Path(os.path.join(self.folder, csvFileName+".csv"))
-            jsonFilePath = csvFilePath.with_suffix('.json')
+            csvFilePath, jsonFilePath = self.getFilePath(csvFileName)
 
             # Do not download or convert the json file if it already exists.
             if not os.path.isfile(jsonFilePath):
@@ -37,30 +35,60 @@ class DataHandler:
                         r = requests.get(self.url + csvFileName+".csv")
                     open(csvFilePath, 'wb').write(r.content)
 
-                if csvFileName == self.listOfFiles[0]:
-                    df = pd.read_csv(csvFilePath, usecols = ["datum", "vek", "pohlavi", "kraj_nuts_kod", "okres_lau_kod"])
-                    df.to_json(jsonFilePath, orient = "records")
-                elif csvFileName == self.listOfFiles[1]:
-                    df = pd.read_csv(csvFilePath, usecols = ["datum", "pocet_hosp"])
-                    df.to_json(jsonFilePath, orient = "records")
-                elif csvFileName == self.listOfFiles[2]:
-                    df = pd.read_csv(csvFilePath, usecols = ["datum", "kraj_nuts_kod", "okres_lau_kod", "prirustkovy_pocet_testu_okres", "prirustkovy_pocet_testu_kraj"])
-                    df.to_json(jsonFilePath, orient = "records")
-                elif csvFileName == self.listOfFiles[3]:
-                    df = pd.read_csv(csvFilePath, usecols = ["datum", "kraj_nuts_kod"])
-                    df.to_json(jsonFilePath, orient = "records")
-                elif csvFileName == self.listOfFiles[4]:
-                    df = pd.read_csv(csvFilePath, usecols = ["datum", "poradi_davky", "vakcina", "vekova_skupina", "orp_bydliste_kod", "kraj_nuts_kod", "kraj_nazev", "pohlavi"])
-                    df.to_json(jsonFilePath, orient = "records")
-                elif csvFileName == self.listOfFiles[5]:
-                    df = pd.read_csv(csvFilePath, usecols = ["datum", "kraj_nuts_kod"])
-                    df.to_json(jsonFilePath, orient = "records")
-                elif csvFileName == self.listOfFiles[6]:
-                    df = pd.read_csv(csvFilePath, usecols = ["hodnota", "vek_txt", "vuzemi_txt"])
-                    df.to_json(jsonFilePath, orient = "records")
-                else:
-                    df = pd.read_csv(csvFilePath, usecols = ["datum"])
-                    df.to_json(jsonFilePath, orient = "records")
+                self.saveAsJson(csvFileName, csvFilePath, jsonFilePath)
+
+
+    """
+    Module: getFilePath
+    Function: creates a path to the file from the CSV name
+    """
+    def getFilePath(self, csvFileName):
+        csvFilePath = Path(os.path.join(self.folder, csvFileName+".csv"))
+        jsonFilePath = csvFilePath.with_suffix('.json')
+        return csvFilePath, jsonFilePath
+
+
+    """
+    Module: saveAsJson
+    Function: saves downloaded files into JSON format
+    """
+    def saveAsJson(self, csvFileName, csvFilePath, jsonFilePath):
+        if csvFileName == self.listOfFiles[0]:
+            df = pd.read_csv(csvFilePath, usecols = ["datum", "vek", "pohlavi",
+                                                     "kraj_nuts_kod", "okres_lau_kod"])
+            df.to_json(jsonFilePath, orient = "records")
+        
+        elif csvFileName == self.listOfFiles[1]:
+            df = pd.read_csv(csvFilePath, usecols = ["datum", "pocet_hosp"])
+            df.to_json(jsonFilePath, orient = "records")
+        
+        elif csvFileName == self.listOfFiles[2]:
+            df = pd.read_csv(csvFilePath, usecols = ["datum", "kraj_nuts_kod", 
+                                                     "okres_lau_kod", "prirustkovy_pocet_testu_okres",
+                                                     "prirustkovy_pocet_testu_kraj"])
+            df.to_json(jsonFilePath, orient = "records")
+        
+        elif csvFileName == self.listOfFiles[3]:
+            df = pd.read_csv(csvFilePath, usecols = ["datum", "kraj_nuts_kod"])
+            df.to_json(jsonFilePath, orient = "records")
+        
+        elif csvFileName == self.listOfFiles[4]:
+            df = pd.read_csv(csvFilePath, usecols = ["datum", "poradi_davky", "vakcina", 
+                                                     "vekova_skupina", "orp_bydliste_kod", 
+                                                     "kraj_nuts_kod", "kraj_nazev", "pohlavi"])
+            df.to_json(jsonFilePath, orient = "records")
+        
+        elif csvFileName == self.listOfFiles[5]:
+            df = pd.read_csv(csvFilePath, usecols = ["datum", "kraj_nuts_kod"])
+            df.to_json(jsonFilePath, orient = "records")
+        
+        elif csvFileName == self.listOfFiles[6]:
+            df = pd.read_csv(csvFilePath, usecols = ["hodnota", "vek_txt", "vuzemi_txt"])
+            df.to_json(jsonFilePath, orient = "records")
+        
+        else:
+            df = pd.read_csv(csvFilePath, usecols = ["datum"])
+            df.to_json(jsonFilePath, orient = "records")
 
 
 if __name__ == "__main__":
