@@ -41,7 +41,6 @@ class DataVisualizer:
         plt.plot(tests["datum"], tests["pocet"], label = "Počet provedených testů")
         plt.plot(cured["datum"], cured["pocet"], label = "Počet vyléčených")
 
-        plt.xlabel("Datum")
         plt.ylabel("Počet")
         plt.title("Dotaz A1")
         plt.legend(bbox_to_anchor=(1.04,0.5), loc="center left")
