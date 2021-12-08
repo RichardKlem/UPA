@@ -44,3 +44,8 @@ if __name__ == "__main__":
                                 "data-part2/A1-nakazeni-example.csv",
                                 "data-part2/A1-testy-example.csv",
                                 "data-part2/A1-vyleceni-example.csv")
+
+        visualizer.visualizeA3( "graphs/A3-kraje.png",
+                                "graphs/A3-pohlavi.png",
+                                "graphs/A3-vek.png",
+                                "data-part2/A3-ockovani-example.csv")
