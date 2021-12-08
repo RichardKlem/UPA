@@ -2,3 +2,4 @@ data
 src/__pycache__
 mongo_secrets.py
 __pycache__
+graphs/
