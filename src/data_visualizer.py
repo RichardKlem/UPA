@@ -4,6 +4,57 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
+def get_12_last_months_dates(start_month_date):
+    months_keys = []
+    curr_month_date = start_month_date
+
+    for i in range(0,12):
+        months_keys += [curr_month_date]
+
+        year = int(curr_month_date.split("-")[0])
+        month = int(curr_month_date.split("-")[1])
+
+        if month > 1:
+            curr_month_date = f"{year}-{str(month-1).zfill(2)}"
+        else:
+            curr_month_date = f"{year-1}-{12}"
+
+    return months_keys
+
+
+def B2_load_stats_for_last_12_month(csv_data, last_12_months_dates):
+    choosed_county_nuts = "CZ010"
+    choosed_county_name = "Hlavní město Praha"
+    citizens_in_choosed_county = 1300000 #approximately
+    citizens_in_cr = 10700000 #approximately
+
+    stats = { "choosed_county": {}, "all_counties": {}}
+
+    for month_date in last_12_months_dates:
+        stats["choosed_county"][month_date] = 0
+        stats["all_counties"][month_date] = 0
+
+    for row in csv_data.iterrows():
+        data = row[1]
+        month_date = data["datum"][:-3]
+
+        if month_date not in last_12_months_dates:
+            continue
+
+        if data["kraj_nuts_kod"] == choosed_county_nuts:
+            stats["choosed_county"][month_date] += 1
+
+        stats["all_counties"][month_date] += 1
+
+
+    # normalize data to number of citizens in county/czech republic
+    for month_date in stats["all_counties"].keys():
+        stats["choosed_county"][month_date] *= (100 / citizens_in_choosed_county)
+        stats["all_counties"][month_date] *= (100 / citizens_in_cr)
+
+    return stats
+
+
 class DataVisualizer:
     """ The class uses data in CSV format and creates a set of graphs which
         describe the data. """
@@ -162,4 +213,82 @@ class DataVisualizer:
         plt.axis('tight')
         plt.tight_layout()
         plt.savefig(output_path_age)
+        plt.close("all")
+
+
+    def visualizeB2(self, output_path_infected, output_path_dead, output_path_vaccinated, infected_path, dead_path, vaccinated_path, start_month):
+        infected = pd.read_csv(infected_path)
+        dead = pd.read_csv(dead_path)
+        vaccinated = pd.read_csv(vaccinated_path)
+
+        last_12_months_dates = get_12_last_months_dates(start_month)
+
+        infected_stats = B2_load_stats_for_last_12_month(infected, last_12_months_dates)
+        dead_stats = B2_load_stats_for_last_12_month(dead, last_12_months_dates)
+        vaccinated_stats= B2_load_stats_for_last_12_month(vaccinated, last_12_months_dates)
+
+        width=0.35
+        x = np.arange(12)
+
+        # add data
+        fig = plt.figure(figsize=(15, 7))
+        ax = fig.add_subplot(111)
+        bar_choosed_county = ax.bar(x - width/2, list(infected_stats["choosed_county"].values()), color = "r", width=width)
+        bar_all_counties = ax.bar(x + width/2, list(infected_stats["all_counties"].values()), color = "#696969", width=width)
+        ax.set_xticks(x)
+        ax.set_xticklabels(last_12_months_dates)
+
+        plt.ylabel("Počet nakažených [%]")
+        plt.title("Dotaz B2-1 - porovnání počtu nakažených Hlavního města Prahy a ČR")
+        handles = [plt.Rectangle((0,0),1,1, color='r'), plt.Rectangle((0,0),1,1, color='#696969')]
+        plt.legend(handles, ("Hlavní město Praha", "Česká Republika"), bbox_to_anchor=(1.04,0.5), loc="center left")
+
+        ax.bar_label(bar_choosed_county)
+        ax.bar_label(bar_all_counties)
+
+        plt.axis('tight')
+        plt.tight_layout()
+        plt.savefig(output_path_infected)
+        plt.close("all")
+
+        # add data
+        fig = plt.figure(figsize=(15, 7))
+        ax = fig.add_subplot(111)
+        bar_choosed_county = ax.bar(x - width/2, list(dead_stats["choosed_county"].values()), color = "#212121", width=width)
+        bar_all_counties = ax.bar(x + width/2, list(dead_stats["all_counties"].values()), color = "#696969", width=width)
+        ax.set_xticks(x)
+        ax.set_xticklabels(last_12_months_dates)
+
+        plt.ylabel("Počet zemřelých [%]")
+        plt.title("Dotaz B2-2 - porovnání počtu zemřelých Hlavního města Prahy a ČR")
+        handles = [plt.Rectangle((0,0),1,1, color='#212121'), plt.Rectangle((0,0),1,1, color='#696969')]
+        plt.legend(handles, ("Hlavní město Praha", "Česká Republika"), bbox_to_anchor=(1.04,0.5), loc="center left")
+
+        ax.bar_label(bar_choosed_county)
+        ax.bar_label(bar_all_counties)
+
+        plt.axis('tight')
+        plt.tight_layout()
+        plt.savefig(output_path_dead)
+        plt.close("all")
+
+        # add data
+        fig = plt.figure(figsize=(15, 7))
+        ax = fig.add_subplot(111)
+        bar_choosed_county = ax.bar(x - width/2, list(vaccinated_stats["choosed_county"].values()), color = "#1E90FF", width=width)
+        bar_all_counties = ax.bar(x + width/2, list(vaccinated_stats["all_counties"].values()), color = "#696969", width=width)
+        ax.set_xticks(x)
+        ax.set_xticklabels(last_12_months_dates)
+
+        plt.ylabel("Počet očkovaných [%]")
+        plt.title("Dotaz B2-3 - porovnání počtu očkovaných Hlavního města Prahy a ČR")
+        handles = [plt.Rectangle((0,0),1,1, color='#1E90FF'), plt.Rectangle((0,0),1,1, color='#696969')]
+        plt.legend(handles, ("Hlavní město Praha", "Česká Republika"), bbox_to_anchor=(1.04,0.5), loc="center left")
+
+        ax.bar_label(bar_choosed_county)
+        ax.bar_label(bar_all_counties)
+
+        plt.axis('tight')
+        plt.tight_layout()
+        plt.savefig(output_path_vaccinated)
         plt.close("all")

@@ -49,3 +49,11 @@ if __name__ == "__main__":
                                 "graphs/A3-pohlavi.png",
                                 "graphs/A3-vek.png",
                                 "data-part2/A3-ockovani-example.csv")
+
+        visualizer.visualizeB2( "graphs/B2-nakazeni.png",
+                                "graphs/B2-zemreli.png",
+                                "graphs/B2-ockovani.png",
+                                "data-part2/B2-nakazeni-example.csv",
+                                "data-part2/B2-zemreli-example.csv",
+                                "data-part2/B2-ockovani-example.csv",
+                                "2021-11")
