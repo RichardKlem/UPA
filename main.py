@@ -2,7 +2,7 @@ import json
 import os
 from pathlib import Path
 
-import src.loader
+#import src.loader
 from data_files import data_files
 from src.data_handler import DataHandler
 from src.data_visualizer import DataVisualizer
@@ -11,8 +11,8 @@ if __name__ == "__main__":
     data_folder = 'data'
     selected_files = list(data_files.keys())
 
-    skip_download = False
-    skip_insert = False
+    skip_download = True
+    skip_insert = True
     skip_visualize = False
 
     if not skip_download:
