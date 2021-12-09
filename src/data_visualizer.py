@@ -43,7 +43,7 @@ class DataVisualizer:
         plt.plot(cured["datum"], cured["pocet"], label = "Počet vyléčených")
 
         plt.ylabel("Počet")
-        plt.title("Dotaz A1")
+        plt.title("Dotaz A1 - vývoj COVIDové situace")
         plt.legend(bbox_to_anchor=(1.04,0.5), loc="center left")
 
         plt.savefig(output_path, bbox_inches="tight")
@@ -105,7 +105,7 @@ class DataVisualizer:
         ax.set_xticklabels(counties.keys(), rotation = 80)
 
         plt.ylabel("Počet očkovaných")
-        plt.title("Dotaz A3-1")
+        plt.title("Dotaz A3-1 - počty provedených očkování v jednotlivých krajích")
 
         ax.bar_label(bar_cnt)
 
@@ -125,7 +125,7 @@ class DataVisualizer:
         ax.set_xticklabels(counties.keys(), rotation = 80)
 
         plt.ylabel("Počet očkovaných")
-        plt.title("Dotaz A3-2")
+        plt.title("Dotaz A3-2 - počty provedených očkování v jednotlivých krajích podle pohlaví")
         handles = [plt.Rectangle((0,0),1,1, color='blue'), plt.Rectangle((0,0),1,1, color='red')]
         plt.legend(handles, ("Muži", "Ženy"), bbox_to_anchor=(1.04,0.5), loc="center left")
 
@@ -149,7 +149,7 @@ class DataVisualizer:
         ax.set_xticklabels(counties.keys(), rotation = 80)
 
         plt.ylabel("Počet očkovaných")
-        plt.title("Dotaz A3-3")
+        plt.title("Dotaz A3-3 - počty provedených očkování v jednotlivých krajích podle věku")
         handles = [ plt.Rectangle((0,0),1,1, color='#104E8B'),
                     plt.Rectangle((0,0),1,1, color='#00688B'),
                     plt.Rectangle((0,0),1,1, color='#00BFFF')]
