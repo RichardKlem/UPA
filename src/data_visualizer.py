@@ -102,7 +102,7 @@ class DataVisualizer:
         ax = fig.add_subplot(111)
         bar_cnt = ax.bar(counties.keys(), list(stats["cnt"].values()))
         ax.set_xticks(x)
-        ax.set_xticklabels(counties.keys(), rotation = 80)
+        ax.set_xticklabels(counties.keys(), rotation = 45)
 
         plt.ylabel("Počet očkovaných")
         plt.title("Dotaz A3-1 - počty provedených očkování v jednotlivých krajích")
@@ -122,7 +122,7 @@ class DataVisualizer:
         bar_men = ax.bar(x - width/2, list(stats["men"].values()), color = 'b', width=width)
         bar_women = ax.bar(x + width/2, list(stats["women"].values()), color = 'r', width=width)
         ax.set_xticks(x)
-        ax.set_xticklabels(counties.keys(), rotation = 80)
+        ax.set_xticklabels(counties.keys(), rotation = 45)
 
         plt.ylabel("Počet očkovaných")
         plt.title("Dotaz A3-2 - počty provedených očkování v jednotlivých krajích podle pohlaví")
@@ -146,7 +146,7 @@ class DataVisualizer:
         bar_age2 = ax.bar(x, list(stats["age2"].values()), color = '#00688B', width=width)
         bar_age3 = ax.bar(x + width, list(stats["age3"].values()), color = '#104E8B', width=width)
         ax.set_xticks(x)
-        ax.set_xticklabels(counties.keys(), rotation = 80)
+        ax.set_xticklabels(counties.keys(), rotation = 45)
 
         plt.ylabel("Počet očkovaných")
         plt.title("Dotaz A3-3 - počty provedených očkování v jednotlivých krajích podle věku")
