@@ -2,7 +2,7 @@ import json
 import os
 from pathlib import Path
 
-#import src.loader
+import src.loader
 from data_files import data_files
 from src.data_handler import DataHandler
 from src.data_visualizer import DataVisualizer

@@ -94,7 +94,7 @@ class DataVisualizer:
         plt.plot(cured["datum"], cured["pocet"], label = "Počet vyléčených")
 
         plt.ylabel("Počet")
-        plt.title("Dotaz A1 - vývoj COVIDové situace")
+        plt.title("Dotaz A1 - vývoj COVID situace")
         plt.legend(bbox_to_anchor=(1.04,0.5), loc="center left")
 
         plt.savefig(output_path, bbox_inches="tight")
