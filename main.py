@@ -6,6 +6,7 @@ import src.loader
 from data_files import data_files
 from src.data_handler import DataHandler
 from src.data_visualizer import DataVisualizer
+from src.mongo_to_dataframe import load_data
 
 if __name__ == "__main__":
     data_folder = 'data'
@@ -13,7 +14,8 @@ if __name__ == "__main__":
 
     skip_download = True
     skip_insert = True
-    skip_visualize = False
+    skip_data_extraction = False
+    skip_visualize = True
 
     if not skip_download:
         Handler = DataHandler(data_folder=data_folder, list_of_files=selected_files)
@@ -37,6 +39,12 @@ if __name__ == "__main__":
                         file_data = [file_data]
                     src.loader.load_data(collection_name=file_name, data=file_data)
 
+    # Extracts data from database and save them in CSV files into "data-part2" directory.
+    if not skip_data_extraction:
+        load_data()
+
+    # Creates graphs which answer questions A1, A3, B2, V1 and V2. Furthermore it
+    # prepares data for data mining task C1.
     if not skip_visualize:
         visualizer = DataVisualizer()
         visualizer.visualizeA1( "graphs/A1.png",

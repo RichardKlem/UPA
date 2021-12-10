@@ -82,9 +82,5 @@ def load_data():
         projection["_id"] = False
 
         df = DataFrame(db[source[3:]].find({}, projection=dict(projection)))
-        df.to_csv(f"{os.path.join(os.pardir, 'data-part2', source)}.csv", index=False)
+        df.to_csv(f"{os.path.join('data-part2', source)}.csv", index=False)
     client.close()
-
-
-if __name__ == "__main__":
-    load_data()

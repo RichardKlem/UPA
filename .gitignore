@@ -3,3 +3,5 @@ src/__pycache__
 mongo_secrets.py
 __pycache__
 graphs/
+!data-part2/*-example.csv
+data-part2/
