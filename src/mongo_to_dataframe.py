@@ -20,7 +20,7 @@ sources = {
     },
 
     "A3-ockovani-profese": {
-        "columns": ["datum", "poradi_davky", "vakcina", "kraj_nuts_kod"]
+        "columns": ["datum", "poradi_davky", "vakcina", "kraj_nazev", "vekova_skupina", "pohlavi"]
     },
 
     "B2-osoby": {
