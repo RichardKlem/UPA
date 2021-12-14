@@ -53,21 +53,22 @@ if __name__ == "__main__":
     # prepares data for data mining task C1.
     if not skip_visualize:
         visualizer = DataVisualizer()
-        visualizer.visualizeA1( "graphs/A1.png",
-                                "data-part2/A1-hospitalizovani-example.csv",
-                                "data-part2/A1-nakazeni-example.csv",
-                                "data-part2/A1-testy-example.csv",
-                                "data-part2/A1-vyleceni-example.csv")
+        visualizer.visualizeA1( "graphs/A1-statistiky.png",
+                                "graphs/A1-testy.png",
+                                "data-part2/A1-hospitalizace.csv",
+                                "data-part2/A1-osoby.csv",
+                                "data-part2/A1-kraj-okres-testy.csv",
+                                "data-part2/A1-vyleceni.csv")
 
         visualizer.visualizeA3( "graphs/A3-kraje.png",
                                 "graphs/A3-pohlavi.png",
                                 "graphs/A3-vek.png",
-                                "data-part2/A3-ockovani-example.csv")
+                                "data-part2/A3-ockovani-profese.csv")
 
         visualizer.visualizeB2( "graphs/B2-nakazeni.png",
                                 "graphs/B2-zemreli.png",
                                 "graphs/B2-ockovani.png",
-                                "data-part2/B2-nakazeni-example.csv",
-                                "data-part2/B2-zemreli-example.csv",
-                                "data-part2/B2-ockovani-example.csv",
+                                "data-part2/B2-osoby.csv",
+                                "data-part2/B2-umrti.csv",
+                                "data-part2/B2-ockovani-profese.csv",
                                 "2021-11")

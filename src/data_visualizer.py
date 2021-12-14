@@ -62,7 +62,7 @@ class DataVisualizer:
     def __init__(self):
         pass
 
-    def visualizeA1(self, output_path, hospitalized_path, infected_path, tests_path, cured_path):
+    def visualizeA1(self, output_path, output_path_tests, hospitalized_path, infected_path, tests_path, cured_path):
         print("Creating graph A1... ", end="", flush = True)
 
         hospitalized = pd.read_csv(hospitalized_path)
@@ -84,22 +84,33 @@ class DataVisualizer:
             cured.at[i, 'datum'] = cured.at[i, 'datum'][:-3]
 
         # sum value in month
-        hospitalized = hospitalized.groupby('datum', as_index=False).sum()
-        infected = infected.groupby('datum', as_index=False).sum()
-        tests = tests.groupby('datum', as_index=False).sum()
-        cured = cured.groupby('datum', as_index=False).sum()
+        hospitalized = hospitalized.groupby('datum', as_index=False).sum() # dataframe
+        infected = infected.groupby('datum').size() # series
+        tests = tests.groupby('datum', as_index=False).sum() # dataframe
+        cured = cured.groupby('datum').size() # series
 
-        # add a line for each dataset
-        plt.plot(hospitalized["datum"], hospitalized["pocet"], label = "Počet hospitalizovaných")
-        plt.plot(infected["datum"], infected["pocet"], label = "Počet nakažených")
-        plt.plot(tests["datum"], tests["pocet"], label = "Počet provedených testů")
-        plt.plot(cured["datum"], cured["pocet"], label = "Počet vyléčených")
+        # add a line for each dataset -- hospitalized, infected and cured
+        plt.figure(figsize=(10, 5))
+        plt.plot(hospitalized["datum"], hospitalized["pocet_hosp"], label = "Počet hospitalizovaných")
+        plt.plot(infected.index.tolist(), infected.values, label = "Počet nakažených")
+        plt.plot(cured.index.tolist(), cured.values, label = "Počet vyléčených")
 
         plt.ylabel("Počet")
         plt.title("Dotaz A1 - vývoj COVID situace")
         plt.legend(bbox_to_anchor=(1.04,0.5), loc="center left")
 
         plt.savefig(output_path, bbox_inches="tight")
+        plt.close("all")
+
+        # print tests in a different graph for better readability
+        plt.figure(figsize=(7.7, 5))
+        plt.plot(tests["datum"], tests["prirustkovy_pocet_testu_okres"], label = "Počet provedených testů")
+
+        plt.ylabel("Počet")
+        plt.xticks(rotation=45)
+        plt.title("Dotaz A1 - vývoj COVID situace - počty provedených testů")
+
+        plt.savefig(output_path_tests, bbox_inches="tight")
         plt.close("all")
 
         print("DONE")
