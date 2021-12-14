@@ -186,11 +186,15 @@ class DataVisualizer:
         x = np.arange(len(counties))
 
         # add data
+        labels = list(counties.keys())
+        labels.sort()
+        data = [ stats["cnt"][county] for county in labels ]
+
         fig = plt.figure(figsize=(10, 7))
         ax = fig.add_subplot(111)
-        bar_cnt = ax.bar(counties.keys(), list(stats["cnt"].values()))
+        bar_cnt = ax.bar(x, data)
         ax.set_xticks(x)
-        ax.set_xticklabels(counties.keys(), rotation = 45)
+        ax.set_xticklabels(labels, rotation = 45)
 
         plt.ylabel("Počet očkovaných")
         plt.title("Dotaz A3-1 - počty provedených očkování v jednotlivých krajích")
@@ -204,13 +208,18 @@ class DataVisualizer:
 
 
         # add data
+        labels = list(counties.keys())
+        labels.sort()
+        data_men = [ stats["men"][county] for county in labels ]
+        data_women = [ stats["women"][county] for county in labels ]
+
         width=0.35
         fig = plt.figure(figsize=(15, 7))
         ax = fig.add_subplot(111)
-        bar_men = ax.bar(x - width/2, list(stats["men"].values()), color = 'b', width=width)
-        bar_women = ax.bar(x + width/2, list(stats["women"].values()), color = 'r', width=width)
+        bar_men = ax.bar(x - width/2, data_men, color = 'b', width=width)
+        bar_women = ax.bar(x + width/2, data_women, color = 'r', width=width)
         ax.set_xticks(x)
-        ax.set_xticklabels(counties.keys(), rotation = 45)
+        ax.set_xticklabels(labels, rotation = 45)
 
         plt.ylabel("Počet očkovaných")
         plt.title("Dotaz A3-2 - počty provedených očkování v jednotlivých krajích podle pohlaví")
@@ -227,20 +236,26 @@ class DataVisualizer:
 
 
         # add data
+        labels = list(counties.keys())
+        labels.sort()
+        data_age1 = [ stats["age1"][county] for county in labels ]
+        data_age2 = [ stats["age2"][county] for county in labels ]
+        data_age3 = [ stats["age3"][county] for county in labels ]
+
         width=0.28
         fig = plt.figure(figsize=(20, 7))
         ax = fig.add_subplot(111)
-        bar_age1 = ax.bar(x - width, list(stats["age1"].values()), color = '#00BFFF', width=width)
-        bar_age2 = ax.bar(x, list(stats["age2"].values()), color = '#00688B', width=width)
-        bar_age3 = ax.bar(x + width, list(stats["age3"].values()), color = '#104E8B', width=width)
+        bar_age1 = ax.bar(x - width, data_age1, color = '#00CED1', width=width)
+        bar_age2 = ax.bar(x, data_age2, color = '#009ACD', width=width)
+        bar_age3 = ax.bar(x + width, data_age3, color = '#104E8B', width=width)
         ax.set_xticks(x)
-        ax.set_xticklabels(counties.keys(), rotation = 45)
+        ax.set_xticklabels(labels, rotation = 45)
 
         plt.ylabel("Počet očkovaných")
         plt.title("Dotaz A3-3 - počty provedených očkování v jednotlivých krajích podle věku")
         handles = [ plt.Rectangle((0,0),1,1, color='#104E8B'),
-                    plt.Rectangle((0,0),1,1, color='#00688B'),
-                    plt.Rectangle((0,0),1,1, color='#00BFFF')]
+                    plt.Rectangle((0,0),1,1, color='#009ACD'),
+                    plt.Rectangle((0,0),1,1, color='#00CED1')]
         plt.legend(handles, ("60+", "25-59", "0-24"), bbox_to_anchor=(1.04,0.5), loc="center left")
 
         ax.bar_label(bar_age1)
@@ -272,12 +287,17 @@ class DataVisualizer:
         x = np.arange(12)
 
         # add data
+        labels = list(infected_stats["choosed_county"].keys())
+        labels.sort()
+        data_choosed_county = [ infected_stats["choosed_county"][month] for month in labels ]
+        data_all_counties = [ infected_stats["all_counties"][month] for month in labels ]
+
         fig = plt.figure(figsize=(15, 7))
         ax = fig.add_subplot(111)
-        bar_choosed_county = ax.bar(x - width/2, list(infected_stats["choosed_county"].values()), color = "r", width=width)
-        bar_all_counties = ax.bar(x + width/2, list(infected_stats["all_counties"].values()), color = "#696969", width=width)
+        bar_choosed_county = ax.bar(x - width/2, data_choosed_county, color = "r", width=width)
+        bar_all_counties = ax.bar(x + width/2, data_all_counties, color = "#696969", width=width)
         ax.set_xticks(x)
-        ax.set_xticklabels(last_12_months_dates)
+        ax.set_xticklabels(labels)
 
         plt.ylabel("Počet nakažených [%]")
         plt.title("Dotaz B2-1 - porovnání počtu nakažených Hlavního města Prahy a ČR")
@@ -293,12 +313,17 @@ class DataVisualizer:
         plt.close("all")
 
         # add data
+        labels = list(dead_stats["choosed_county"].keys())
+        labels.sort()
+        data_choosed_county = [ dead_stats["choosed_county"][month] for month in labels ]
+        data_all_counties = [ dead_stats["all_counties"][month] for month in labels ]
+
         fig = plt.figure(figsize=(15, 7))
         ax = fig.add_subplot(111)
-        bar_choosed_county = ax.bar(x - width/2, list(dead_stats["choosed_county"].values()), color = "#212121", width=width)
-        bar_all_counties = ax.bar(x + width/2, list(dead_stats["all_counties"].values()), color = "#696969", width=width)
+        bar_choosed_county = ax.bar(x - width/2, data_choosed_county, color = "#212121", width=width)
+        bar_all_counties = ax.bar(x + width/2, data_all_counties, color = "#696969", width=width)
         ax.set_xticks(x)
-        ax.set_xticklabels(last_12_months_dates)
+        ax.set_xticklabels(labels)
 
         plt.ylabel("Počet zemřelých [%]")
         plt.title("Dotaz B2-2 - porovnání počtu zemřelých Hlavního města Prahy a ČR")
@@ -314,12 +339,17 @@ class DataVisualizer:
         plt.close("all")
 
         # add data
+        labels = list(vaccinated_stats["choosed_county"].keys())
+        labels.sort()
+        data_choosed_county = [ vaccinated_stats["choosed_county"][month] for month in labels ]
+        data_all_counties = [ vaccinated_stats["all_counties"][month] for month in labels ]
+
         fig = plt.figure(figsize=(15, 7))
         ax = fig.add_subplot(111)
-        bar_choosed_county = ax.bar(x - width/2, list(vaccinated_stats["choosed_county"].values()), color = "#1E90FF", width=width)
-        bar_all_counties = ax.bar(x + width/2, list(vaccinated_stats["all_counties"].values()), color = "#696969", width=width)
+        bar_choosed_county = ax.bar(x - width/2, data_choosed_county, color = "#1E90FF", width=width)
+        bar_all_counties = ax.bar(x + width/2, data_all_counties, color = "#696969", width=width)
         ax.set_xticks(x)
-        ax.set_xticklabels(last_12_months_dates)
+        ax.set_xticklabels(labels)
 
         plt.ylabel("Počet očkovaných [%]")
         plt.title("Dotaz B2-3 - porovnání počtu očkovaných Hlavního města Prahy a ČR")
