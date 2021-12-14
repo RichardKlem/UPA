@@ -22,7 +22,7 @@ def get_12_last_months_dates(start_month_date):
     return months_keys
 
 
-def B2_load_stats_for_last_12_month(csv_data, last_12_months_dates):
+def B2_load_stats_for_last_12_month(csv_data, last_12_months_dates, vaccinated=False):
     choosed_county_nuts = "CZ010"
     choosed_county_name = "Hlavní město Praha"
     citizens_in_choosed_county = 1300000 #approximately
@@ -30,25 +30,24 @@ def B2_load_stats_for_last_12_month(csv_data, last_12_months_dates):
 
     stats = { "choosed_county": {}, "all_counties": {}}
 
+    # remove day from date
+    csv_data['datum'] = csv_data['datum'].str[:-3]
+
+    # remove too old data
+    csv_data.drop(csv_data[~csv_data.datum.isin(last_12_months_dates)].index, inplace=True)
+
+    if vaccinated:
+        # count only fully vaccinated and only once
+        csv_data.drop(csv_data[(csv_data.poradi_davky != 2) & (csv_data.vakcina == "Comirnaty")].index, inplace=True)
+        csv_data.drop(csv_data[(csv_data.poradi_davky != 2) & (csv_data.vakcina == "SPIKEVAX")].index, inplace=True)
+        csv_data.drop(csv_data[(csv_data.poradi_davky != 2) & (csv_data.vakcina == "VAXZEVRIA")].index, inplace=True)
+        csv_data.drop(csv_data[(csv_data.poradi_davky > 1) & (csv_data.vakcina == "COVID-19 Vaccine Janssen")].index, inplace=True)
+
     for month_date in last_12_months_dates:
-        stats["choosed_county"][month_date] = 0
-        stats["all_counties"][month_date] = 0
+        stats["choosed_county"][month_date] = len(csv_data[(csv_data.datum == month_date) & (csv_data.kraj_nuts_kod == choosed_county_nuts)])
+        stats["all_counties"][month_date] = len(csv_data[csv_data.datum == month_date])
 
-    for row in csv_data.iterrows():
-        data = row[1]
-        month_date = data["datum"][:-3]
-
-        if month_date not in last_12_months_dates:
-            continue
-
-        if data["kraj_nuts_kod"] == choosed_county_nuts:
-            stats["choosed_county"][month_date] += 1
-
-        stats["all_counties"][month_date] += 1
-
-
-    # normalize data to number of citizens in county/czech republic
-    for month_date in stats["all_counties"].keys():
+        # normalize data to number of citizens in county/czech republic
         stats["choosed_county"][month_date] *= (100 / citizens_in_choosed_county)
         stats["all_counties"][month_date] *= (100 / citizens_in_cr)
 
@@ -71,17 +70,10 @@ class DataVisualizer:
         cured = pd.read_csv(cured_path)
 
         # remove day from date
-        for i in hospitalized.index:
-            hospitalized.at[i, 'datum'] = hospitalized.at[i, 'datum'][:-3]
-
-        for i in infected.index:
-            infected.at[i, 'datum'] = infected.at[i, 'datum'][:-3]
-
-        for i in tests.index:
-            tests.at[i, 'datum'] = tests.at[i, 'datum'][:-3]
-
-        for i in cured.index:
-            cured.at[i, 'datum'] = cured.at[i, 'datum'][:-3]
+        hospitalized['datum'] = hospitalized['datum'].str[:-3]
+        infected['datum'] = infected['datum'].str[:-3]
+        tests['datum'] = tests['datum'].str[:-3]
+        cured['datum'] = cured['datum'].str[:-3]
 
         # sum value in month
         hospitalized = hospitalized.groupby('datum', as_index=False).sum() # dataframe
@@ -147,21 +139,48 @@ class DataVisualizer:
             "age3": counties.copy()
         }
 
-        for row in vaccinated.iterrows():
-            data = row[1]
-            stats["cnt"][data["kraj_nazev"]] += 1
+        # count only fully vaccinated
+        vaccinated.drop(vaccinated[(vaccinated.poradi_davky != 2) & (vaccinated.vakcina == "Comirnaty")].index, inplace=True)
+        vaccinated.drop(vaccinated[(vaccinated.poradi_davky != 2) & (vaccinated.vakcina == "SPIKEVAX")].index, inplace=True)
+        vaccinated.drop(vaccinated[(vaccinated.poradi_davky != 2) & (vaccinated.vakcina == "VAXZEVRIA")].index, inplace=True)
+        vaccinated.drop(vaccinated[(vaccinated.poradi_davky > 1) & (vaccinated.vakcina == "COVID-19 Vaccine Janssen")].index, inplace=True)
 
-            if data["pohlavi"] == "M":
-                stats["men"][data["kraj_nazev"]] += 1
-            else:
-                stats["women"][data["kraj_nazev"]] += 1
+        # replace age attribute to 1 = age1, 2 = age2, 3 = age3
+        vaccinated.loc[ (vaccinated.vekova_skupina == "0-11") |
+                        (vaccinated.vekova_skupina == "12-15") |
+                        (vaccinated.vekova_skupina == "16-17") |
+                        (vaccinated.vekova_skupina == "18-24"), "vekova_skupina"] = 1
 
-            if data["vekova_skupina"] in ("60-64", "65-69", "70-74", "75-79", "80+"):
-                stats["age3"][data["kraj_nazev"]] += 1
-            elif data["vekova_skupina"] in ("25-29", "30-34", "35-39", "40-44", "45-49", "50-54", "55-59"):
-                stats["age2"][data["kraj_nazev"]] += 1
-            else:
-                stats["age1"][data["kraj_nazev"]] += 1
+        vaccinated.loc[ (vaccinated.vekova_skupina == "25-29") |
+                        (vaccinated.vekova_skupina == "30-34") |
+                        (vaccinated.vekova_skupina == "35-39") |
+                        (vaccinated.vekova_skupina == "40-44") |
+                        (vaccinated.vekova_skupina == "45-49") |
+                        (vaccinated.vekova_skupina == "50-54") |
+                        (vaccinated.vekova_skupina == "55-59"), "vekova_skupina"] = 2
+
+        vaccinated.loc[ (vaccinated.vekova_skupina == "60-64") |
+                        (vaccinated.vekova_skupina == "65-69") |
+                        (vaccinated.vekova_skupina == "70-74") |
+                        (vaccinated.vekova_skupina == "75-79") |
+                        (vaccinated.vekova_skupina == "80+"), "vekova_skupina"] = 3
+
+        # for each county calculate stats
+        for county_name in counties.keys():
+            # all vaccinated
+            stats["cnt"][county_name] = len(vaccinated[vaccinated.kraj_nazev == county_name])
+
+            # all vaccinated men
+            stats["men"][county_name] = len(vaccinated[(vaccinated.kraj_nazev == county_name) & (vaccinated.pohlavi == "M")])
+
+            # all women
+            stats["women"][county_name] = stats["cnt"][county_name] - stats["men"][county_name]
+
+            # all age categories
+            stats["age1"][county_name] = len(vaccinated[(vaccinated.kraj_nazev == county_name) & (vaccinated.vekova_skupina == 1)])
+            stats["age2"][county_name] = len(vaccinated[(vaccinated.kraj_nazev == county_name) & (vaccinated.vekova_skupina == 2)])
+            stats["age3"][county_name] = stats["cnt"][county_name] - (stats["age1"][county_name] + stats["age2"][county_name])
+
 
         x = np.arange(len(counties))
 
@@ -246,7 +265,7 @@ class DataVisualizer:
 
         infected_stats = B2_load_stats_for_last_12_month(infected, last_12_months_dates)
         dead_stats = B2_load_stats_for_last_12_month(dead, last_12_months_dates)
-        vaccinated_stats= B2_load_stats_for_last_12_month(vaccinated, last_12_months_dates)
+        vaccinated_stats= B2_load_stats_for_last_12_month(vaccinated, last_12_months_dates, vaccinated=True)
 
         width=0.35
         x = np.arange(12)
