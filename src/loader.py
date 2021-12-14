@@ -16,5 +16,6 @@ def load_data(collection_name=None, data=None):
         db.create_collection(collection_name)
         collection = db[collection_name]
         collection.insert_many(data)
+        print(f"{collection_name} collection was inserted into MongoDB")
 
     client.close()

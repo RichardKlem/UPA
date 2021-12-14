@@ -28,6 +28,7 @@ class DataHandler:
                 if not os.path.isfile(csv_file_path):
                     r = requests.get(data_files.get(csv_file_name).get('url') + csv_file_name + ".csv")
                     open(csv_file_path, 'wb').write(r.content)
+                print(f"{csv_file_path} downloaded")
 
                 self.save_as_json(csv_file_name, csv_file_path, json_file_path)
 
@@ -35,6 +36,7 @@ class DataHandler:
     def save_as_json(csv_file_name: Path, csv_file_path, json_file_path):
         df = pd.read_csv(csv_file_path, usecols=data_files.get(csv_file_name).get('columns'))
         df.to_json(json_file_path, orient="records")
+        print(f"{json_file_path} was created")
 
 
 if __name__ == "__main__":

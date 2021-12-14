@@ -63,6 +63,8 @@ class DataVisualizer:
         pass
 
     def visualizeA1(self, output_path, hospitalized_path, infected_path, tests_path, cured_path):
+        print("Creating graph A1... ", end="", flush = True)
+
         hospitalized = pd.read_csv(hospitalized_path)
         infected = pd.read_csv(infected_path)
         tests = pd.read_csv(tests_path)
@@ -100,8 +102,12 @@ class DataVisualizer:
         plt.savefig(output_path, bbox_inches="tight")
         plt.close("all")
 
+        print("DONE")
+
 
     def visualizeA3(self, output_path_county, output_path_sex, output_path_age, vaccinated_path):
+        print("Creating graph A3... ", end="", flush = True)
+
         vaccinated = pd.read_csv(vaccinated_path)
 
         counties = {
@@ -215,8 +221,12 @@ class DataVisualizer:
         plt.savefig(output_path_age)
         plt.close("all")
 
+        print("DONE")
+
 
     def visualizeB2(self, output_path_infected, output_path_dead, output_path_vaccinated, infected_path, dead_path, vaccinated_path, start_month):
+        print("Creating graph B2... ", end="", flush = True)
+
         infected = pd.read_csv(infected_path)
         dead = pd.read_csv(dead_path)
         vaccinated = pd.read_csv(vaccinated_path)
@@ -292,3 +302,5 @@ class DataVisualizer:
         plt.tight_layout()
         plt.savefig(output_path_vaccinated)
         plt.close("all")
+
+        print("DONE")

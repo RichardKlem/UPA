@@ -83,4 +83,5 @@ def load_data():
 
         df = DataFrame(db[source[3:]].find({}, projection=dict(projection)))
         df.to_csv(f"{os.path.join('data-part2', source)}.csv", index=False)
+        print(f"{os.path.join('data-part2', source)}.csv was created")
     client.close()
