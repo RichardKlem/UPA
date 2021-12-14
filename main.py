@@ -15,6 +15,7 @@ if __name__ == "__main__":
     skip_download = True
     redownload_data = True
     skip_insert = True
+    reinsert_data = True
     skip_data_extraction = False
     skip_visualize = True
 
@@ -38,7 +39,11 @@ if __name__ == "__main__":
                     file_data = json.loads(f.read())
                     if not isinstance(file_data, list):
                         file_data = [file_data]
-                    src.loader.load_data(collection_name=file_name, data=file_data)
+                    if reinsert_data:
+                        src.loader.load_data(collection_name=file_name, data=file_data, reinsert=True)
+                    else:
+                        src.loader.load_data(collection_name=file_name, data=file_data)
+
 
     # Extracts data from database and save them in CSV files into "data-part2" directory.
     if not skip_data_extraction:
