@@ -88,8 +88,9 @@ class DataVisualizer:
         plt.plot(cured.index.tolist(), cured.values, label = "Počet vyléčených")
 
         plt.ylabel("Počet")
+        plt.xticks(rotation=45)
         plt.title("Dotaz A1 - vývoj COVID situace")
-        plt.legend(bbox_to_anchor=(1.04,0.5), loc="center left")
+        plt.legend(bbox_to_anchor=(0.02, 0.98), loc="upper left")
 
         plt.savefig(output_path, bbox_inches="tight")
         plt.close("all")
@@ -283,8 +284,8 @@ class DataVisualizer:
         handles = [plt.Rectangle((0,0),1,1, color='r'), plt.Rectangle((0,0),1,1, color='#696969')]
         plt.legend(handles, ("Hlavní město Praha", "Česká Republika"), bbox_to_anchor=(1.04,0.5), loc="center left")
 
-        ax.bar_label(bar_choosed_county)
-        ax.bar_label(bar_all_counties)
+        ax.bar_label(bar_choosed_county, fmt='%.2f')
+        ax.bar_label(bar_all_counties, fmt='%.2f')
 
         plt.axis('tight')
         plt.tight_layout()
@@ -304,8 +305,8 @@ class DataVisualizer:
         handles = [plt.Rectangle((0,0),1,1, color='#212121'), plt.Rectangle((0,0),1,1, color='#696969')]
         plt.legend(handles, ("Hlavní město Praha", "Česká Republika"), bbox_to_anchor=(1.04,0.5), loc="center left")
 
-        ax.bar_label(bar_choosed_county)
-        ax.bar_label(bar_all_counties)
+        ax.bar_label(bar_choosed_county, fmt='%.3f')
+        ax.bar_label(bar_all_counties, fmt='%.3f')
 
         plt.axis('tight')
         plt.tight_layout()
@@ -325,8 +326,8 @@ class DataVisualizer:
         handles = [plt.Rectangle((0,0),1,1, color='#1E90FF'), plt.Rectangle((0,0),1,1, color='#696969')]
         plt.legend(handles, ("Hlavní město Praha", "Česká Republika"), bbox_to_anchor=(1.04,0.5), loc="center left")
 
-        ax.bar_label(bar_choosed_county)
-        ax.bar_label(bar_all_counties)
+        ax.bar_label(bar_choosed_county, fmt='%.1f')
+        ax.bar_label(bar_all_counties, fmt='%.1f')
 
         plt.axis('tight')
         plt.tight_layout()
