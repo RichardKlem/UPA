@@ -11,7 +11,7 @@ data_files = {
     },
     "kraj-okres-testy": {
         "url": mzcr_url,
-        "columns": ["datum", "kraj_nuts_kod", "prirustkovy_pocet_testu_kraj"]
+        "columns": ["datum", "kraj_nuts_kod", "prirustkovy_pocet_testu_kraj", "prirustkovy_pocet_testu_okres"]
     },
     "umrti": {
         "url": mzcr_url,

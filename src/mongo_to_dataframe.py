@@ -16,7 +16,7 @@ sources = {
         "columns": ["datum", "pocet_hosp"]
     },
     "A1-kraj-okres-testy": {
-        "columns": ["datum", "prirustkovy_pocet_testu_kraj"]
+        "columns": ["datum", "prirustkovy_pocet_testu_okres"]
     },
 
     "A3-ockovani-profese": {
