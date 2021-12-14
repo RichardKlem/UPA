@@ -13,12 +13,13 @@ if __name__ == "__main__":
     selected_files = list(data_files.keys())
 
     skip_download = True
+    redownload_data = True
     skip_insert = True
     skip_data_extraction = False
     skip_visualize = True
 
     if not skip_download:
-        Handler = DataHandler(data_folder=data_folder, list_of_files=selected_files)
+        Handler = DataHandler(data_folder=data_folder, list_of_files=selected_files, redownload=redownload_data)
         Handler.download()
 
     # Insert data into database.
