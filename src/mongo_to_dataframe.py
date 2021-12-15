@@ -53,7 +53,7 @@ sources = {
         "columns": ["okres_lau_kod", "okres_nazev"]
     },
     "V1-130142-21data043021": {
-        "columns": ["hodnota", "vek_txt", "vuzemi_txt"]
+        "columns": ["hodnota", "vek_txt", "vuzemi_txt", "casref_do"]
     },
 
     "V2-osoby": {
