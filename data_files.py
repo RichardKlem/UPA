@@ -28,7 +28,7 @@ data_files = {
     },
     "130142-21data043021": {
         "url": czso_url,
-        "columns": ["hodnota", "vek_txt", "vuzemi_txt"]
+        "columns": ["hodnota", "vek_txt", "vuzemi_txt", "casref_do"]
     },
     "vyleceni": {
         "url": mzcr_url,
