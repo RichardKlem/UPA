@@ -43,7 +43,7 @@ sources = {
         "columns": ["kraj_nuts_kod", "kraj_nazev", "okres_nazev", "okres_lau_kod", "orp_kod"]
     },
     "C1-130142-21data043021": {
-        "columns": ["hodnota", "vek_txt", "vuzemi_txt"]
+        "columns": ["hodnota", "vek_txt", "vuzemi_txt", "casref_do"]
     },
 
     "V1-osoby": {
