@@ -74,7 +74,7 @@ if __name__ == "__main__":
                                 "2021-11")
 
         visualizer.visualizeOwn("graphs/V1-nakazenych-podle-veku.png",
-                                "data/osoby.csv",
-                                "data/130142-21data043021.csv",
-                                "data/obce.csv",
-                                "Opava")
+                                "data-part2/V1-osoby.csv",
+                                "data-part2/V1-130142-21data043021.csv",
+                                "data-part2/V1-obce.csv",
+                                "Brno-město")
