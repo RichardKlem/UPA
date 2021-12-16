@@ -72,3 +72,6 @@ if __name__ == "__main__":
                                 "data-part2/B2-umrti.csv",
                                 "data-part2/B2-ockovani-profese.csv",
                                 "2021-11")
+
+        visualizer.visualizeV2( "graphs/V2-nakazeni.png",
+                                "data-part2/V2-osoby.csv")

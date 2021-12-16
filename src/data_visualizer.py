@@ -371,3 +371,40 @@ class DataVisualizer:
         plt.close("all")
 
         print("DONE")
+
+
+    def visualizeV2(self, output_path, infected_path):
+        print("Creating graph V1... ", end="", flush = True)
+
+        infected = pd.read_csv(infected_path)
+
+        infected['datum'] = infected['datum'].str[:-3]
+
+        infected = infected[(infected.datum != '2021-12')]
+
+        men = infected[(infected.pohlavi != 'M')]
+        women = infected[(infected.pohlavi != 'Z')]
+
+        men = men.groupby('datum').size() # series
+        women = women.groupby('datum').size() # series
+
+        all_women = 10700000 / 1.95
+        all_men = 10700000 - all_women
+
+        men = men.multiply(100/all_men)
+        women = women.multiply(100/all_women)
+
+        # add data
+        plt.figure(figsize=(10, 5))
+        plt.plot(men.index.tolist(), men.values, "b", label = "Muži")
+        plt.plot(women.index.tolist(), women.values, "r", label = "Ženy")
+
+        plt.ylabel("Počet nakažených [%]")
+        plt.xticks(rotation=45)
+        plt.title("Dotaz V2 - vývoj poměru nakažených jednotlivých pohlaví")
+        plt.legend(bbox_to_anchor=(0.02, 0.98), loc="upper left")
+
+        plt.savefig(output_path, bbox_inches="tight")
+        plt.close("all")
+
+        print("DONE")
