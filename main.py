@@ -13,10 +13,10 @@ if __name__ == "__main__":
     selected_files = list(data_files.keys())
 
     skip_download = True
-    redownload_data = True
+    redownload_data = False
     skip_insert = True
-    reinsert_data = True
-    skip_data_extraction = False
+    reinsert_data = False
+    skip_data_extraction = True
     skip_visualize = False
 
     if not skip_download:

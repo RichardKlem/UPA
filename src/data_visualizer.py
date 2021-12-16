@@ -225,6 +225,8 @@ class DataVisualizer:
         ax1.set_axisbelow(True)
         ax1.set_title("Počty provedených očkování v jednotlivých krajích")
         ax1.set_ylim(top=ax1.get_ylim()[1] * 1.05)
+        for container in ax1.containers:
+            ax1.bar_label(container)
 
         # ---- Second plot ---
         palette = {'M': 'tab:blue', 'Z': 'tab:red', }
@@ -322,83 +324,80 @@ class DataVisualizer:
         dead_stats = B2_load_stats_for_last_12_month(dead, last_12_months_dates)
         vaccinated_stats = B2_load_stats_for_last_12_month(vaccinated, last_12_months_dates, vaccinated=True)
 
-        width = 0.35
-        x = np.arange(12)
-
-        # add data
+        # Months
         labels = list(infected_stats["choosed_county"].keys())
         labels.sort()
-        data_choosed_county = [infected_stats["choosed_county"][month] for month in labels]
-        data_all_counties = [infected_stats["all_counties"][month] for month in labels]
 
-        fig = plt.figure(figsize=(15, 7))
-        ax = fig.add_subplot(111)
-        bar_choosed_county = ax.bar(x - width / 2, data_choosed_county, color="r", width=width)
-        bar_all_counties = ax.bar(x + width / 2, data_all_counties, color="#696969", width=width)
-        ax.set_xticks(x)
-        ax.set_xticklabels(labels)
+        # DataFrames
+        infected_df = pd.DataFrame(infected_stats).melt(var_name="oblast", value_name="pomer").reset_index()
+        g1_labels = list(reversed(labels))
+        infected_df["month"] = g1_labels + g1_labels
+        infected_df.sort_values(by="month", ascending=True, inplace=True)
+        infected_df.pomer = infected_df.pomer.round(2)
 
-        plt.ylabel("Počet nakažených [%]")
-        plt.title("Dotaz B2-1 - porovnání počtu nakažených Hlavního města Prahy a ČR")
-        handles = [plt.Rectangle((0, 0), 1, 1, color='r'), plt.Rectangle((0, 0), 1, 1, color='#696969')]
-        plt.legend(handles, ("Hlavní město Praha", "Česká Republika"), bbox_to_anchor=(0.02, 0.98), loc="upper left")
+        dead_df = pd.DataFrame(dead_stats).melt(var_name="oblast", value_name="pomer").reset_index()
+        g1_labels = list(reversed(labels))
+        dead_df["month"] = g1_labels + g1_labels
+        dead_df.sort_values(by="month", ascending=True, inplace=True)
+        dead_df.pomer = dead_df.pomer * 100
+        dead_df.pomer = dead_df.pomer.round(3)
 
-        ax.bar_label(bar_choosed_county, fmt='%.2f')
-        ax.bar_label(bar_all_counties, fmt='%.2f')
+        vaccinated_df = pd.DataFrame(vaccinated_stats).melt(var_name="oblast", value_name="pomer").reset_index()
+        g1_labels = list(reversed(labels))
+        vaccinated_df["month"] = g1_labels + g1_labels
+        vaccinated_df.sort_values(by="month", ascending=True, inplace=True)
+        vaccinated_df.pomer = vaccinated_df.pomer.round(2)
 
-        plt.axis('tight')
+        # Dump CSVs
+        infected_df.to_csv("dumps/dump_B2_infected_df")
+        dead_df.to_csv("dumps/dump_B2_dead_df")
+        vaccinated_df.to_csv("dumps/dump_B2_vaccinated_df")
+
+        fig = plt.figure(figsize=(12, 6))
+        ax1 = fig.add_subplot(111)
+        sns.barplot(ax=ax1, data=infected_df, x="month", hue="oblast", y="pomer", palette="Paired")
+        fig.suptitle("Dotaz B2-1 - porovnání počtu nakažených Hlavního města Prahy a ČR", fontsize=16)
+        ax1.set_ylabel("Počet nakažených [%]", fontsize=13)
+        ax1.set_xlabel("")
+        for container in ax1.containers:
+            ax1.bar_label(container)
+        patches = [Patch(color=sns.color_palette("Paired")[0], label="Hlavní město Praha"),
+                   Patch(color=sns.color_palette("Paired")[1], label="Česká republika"), ]
+        ax1.legend(title="", handles=patches)
+
         plt.tight_layout()
         plt.savefig(output_path_infected)
         plt.close("all")
 
-        # add data
-        labels = list(dead_stats["choosed_county"].keys())
-        labels.sort()
-        data_choosed_county = [dead_stats["choosed_county"][month] for month in labels]
-        data_all_counties = [dead_stats["all_counties"][month] for month in labels]
+        fig = plt.figure(figsize=(12, 6))
+        ax1 = fig.add_subplot(111)
+        sns.barplot(ax=ax1, data=dead_df, x="month", hue="oblast", y="pomer", palette="Paired")
+        fig.suptitle("Dotaz B2-2 - porovnání počtu zemřelých Hlavního města Prahy a ČR", fontsize=16)
+        ax1.set_ylabel("Počet zemřelých [ desetina promile ]", fontsize=13)
+        ax1.set_xlabel("")
+        for container in ax1.containers:
+            ax1.bar_label(container)
+        patches = [Patch(color=sns.color_palette("Paired")[0], label="Hlavní město Praha"),
+                   Patch(color=sns.color_palette("Paired")[1], label="Česká republika"), ]
+        ax1.legend(title="", handles=patches)
+        ax1.set_yscale("log")
 
-        fig = plt.figure(figsize=(15, 7))
-        ax = fig.add_subplot(111)
-        bar_choosed_county = ax.bar(x - width / 2, data_choosed_county, color="#212121", width=width)
-        bar_all_counties = ax.bar(x + width / 2, data_all_counties, color="#696969", width=width)
-        ax.set_xticks(x)
-        ax.set_xticklabels(labels)
-
-        plt.ylabel("Počet zemřelých [%]")
-        plt.title("Dotaz B2-2 - porovnání počtu zemřelých Hlavního města Prahy a ČR")
-        handles = [plt.Rectangle((0, 0), 1, 1, color='#212121'), plt.Rectangle((0, 0), 1, 1, color='#696969')]
-        plt.legend(handles, ("Hlavní město Praha", "Česká Republika"), bbox_to_anchor=(0.02, 0.98), loc="upper left")
-
-        ax.bar_label(bar_choosed_county, fmt='%.3f')
-        ax.bar_label(bar_all_counties, fmt='%.3f')
-
-        plt.axis('tight')
         plt.tight_layout()
         plt.savefig(output_path_dead)
         plt.close("all")
 
-        # add data
-        labels = list(vaccinated_stats["choosed_county"].keys())
-        labels.sort()
-        data_choosed_county = [vaccinated_stats["choosed_county"][month] for month in labels]
-        data_all_counties = [vaccinated_stats["all_counties"][month] for month in labels]
+        fig = plt.figure(figsize=(12, 6))
+        ax1 = fig.add_subplot(111)
+        sns.barplot(ax=ax1, data=vaccinated_df, x="month", hue="oblast", y="pomer", palette="Paired")
+        fig.suptitle("Dotaz B2-3 - porovnání počtu očkovaných Hlavního města Prahy a ČR", fontsize=16)
+        ax1.set_ylabel("Počet očkovaných [%]", fontsize=13)
+        ax1.set_xlabel("")
+        for container in ax1.containers:
+            ax1.bar_label(container)
+        patches = [Patch(color=sns.color_palette("Paired")[0], label="Hlavní město Praha"),
+                   Patch(color=sns.color_palette("Paired")[1], label="Česká republika"), ]
+        ax1.legend(title="", handles=patches)
 
-        fig = plt.figure(figsize=(15, 7))
-        ax = fig.add_subplot(111)
-        bar_choosed_county = ax.bar(x - width / 2, data_choosed_county, color="#1E90FF", width=width)
-        bar_all_counties = ax.bar(x + width / 2, data_all_counties, color="#696969", width=width)
-        ax.set_xticks(x)
-        ax.set_xticklabels(labels)
-
-        plt.ylabel("Počet očkovaných [%]")
-        plt.title("Dotaz B2-3 - porovnání počtu očkovaných Hlavního města Prahy a ČR")
-        handles = [plt.Rectangle((0, 0), 1, 1, color='#1E90FF'), plt.Rectangle((0, 0), 1, 1, color='#696969')]
-        plt.legend(handles, ("Hlavní město Praha", "Česká Republika"), bbox_to_anchor=(0.02, 0.98), loc="upper left")
-
-        ax.bar_label(bar_choosed_county, fmt='%.1f')
-        ax.bar_label(bar_all_counties, fmt='%.1f')
-
-        plt.axis('tight')
         plt.tight_layout()
         plt.savefig(output_path_vaccinated)
         plt.close("all")
@@ -574,16 +573,16 @@ class DataVisualizer:
         # replace date by 1, 2, 3 and 4 (quarters of the year)
         for df in [infected, vaccinated]:
             df.loc[(df.datum == last_12_months_dates[0]) | (df.datum == last_12_months_dates[1]) | (
-                        df.datum == last_12_months_dates[2]), "datum"] = 4
+                    df.datum == last_12_months_dates[2]), "datum"] = 4
 
             df.loc[(df.datum == last_12_months_dates[3]) | (df.datum == last_12_months_dates[4]) | (
-                        df.datum == last_12_months_dates[5]), "datum"] = 3
+                    df.datum == last_12_months_dates[5]), "datum"] = 3
 
             df.loc[(df.datum == last_12_months_dates[6]) | (df.datum == last_12_months_dates[7]) | (
-                        df.datum == last_12_months_dates[8]), "datum"] = 2
+                    df.datum == last_12_months_dates[8]), "datum"] = 2
 
             df.loc[(df.datum == last_12_months_dates[9]) | (df.datum == last_12_months_dates[10]) | (
-                        df.datum == last_12_months_dates[11]), "datum"] = 1
+                    df.datum == last_12_months_dates[11]), "datum"] = 1
 
             df.rename(columns={"datum": "quarter"}, inplace=True)
 
@@ -602,7 +601,7 @@ class DataVisualizer:
         # "casref_do" and "pohlavi_kod" columns are not needed anymore
         counties_stats.drop(['casref_do', 'pohlavi_kod'], axis=1, inplace=True)
 
-        to_remove = ["Česká republika", # "Hlavní město Praha", this is national county and also county (kraj i okres)
+        to_remove = ["Česká republika",  # "Hlavní město Praha", this is national county and also county (kraj i okres)
                      "Středočeský kraj", "Jihočeský kraj", "Plzeňský kraj", "Karlovarský kraj", "Ústecký kraj",
                      "Liberecký kraj", "Královéhradecký kraj", "Pardubický kraj", "Kraj Vysočina", "Jihomoravský kraj",
                      "Olomoucký kraj", "Moravskoslezský kraj", "Zlínský kraj"]
@@ -615,27 +614,27 @@ class DataVisualizer:
 
         # sort "vekova_skupina" into 3 categories -- 1-(0-24), 2-(25-59), 3-(60+)
         age_stats.loc[(age_stats.vek_txt == "0 až 5 (více nebo rovno 0 a méně než 5)") | (
-                    age_stats.vek_txt == "5 až 10 (více nebo rovno 5 a méně než 10)") | (
-                                  age_stats.vek_txt == "10 až 15 (více nebo rovno 10 a méně než 15)") | (
-                                  age_stats.vek_txt == "15 až 20 (více nebo rovno 15 a méně než 20)") | (
-                                  age_stats.vek_txt == "20 až 25 (více nebo rovno 20 a méně než 25)"), "vek_txt"] = 1
+                age_stats.vek_txt == "5 až 10 (více nebo rovno 5 a méně než 10)") | (
+                              age_stats.vek_txt == "10 až 15 (více nebo rovno 10 a méně než 15)") | (
+                              age_stats.vek_txt == "15 až 20 (více nebo rovno 15 a méně než 20)") | (
+                              age_stats.vek_txt == "20 až 25 (více nebo rovno 20 a méně než 25)"), "vek_txt"] = 1
 
         age_stats.loc[(age_stats.vek_txt == "25 až 30 (více nebo rovno 25 a méně než 30)") | (
-                    age_stats.vek_txt == "30 až 35 (více nebo rovno 30 a méně než 35)") | (
-                                  age_stats.vek_txt == "35 až 40 (více nebo rovno 35 a méně než 40)") | (
-                                  age_stats.vek_txt == "40 až 45 (více nebo rovno 40 a méně než 45)") | (
-                                  age_stats.vek_txt == "45 až 50 (více nebo rovno 45 a méně než 50)") | (
-                                  age_stats.vek_txt == "50 až 55 (více nebo rovno 50 a méně než 55)") | (
-                                  age_stats.vek_txt == "55 až 60 (více nebo rovno 55 a méně než 60)"), "vek_txt"] = 2
+                age_stats.vek_txt == "30 až 35 (více nebo rovno 30 a méně než 35)") | (
+                              age_stats.vek_txt == "35 až 40 (více nebo rovno 35 a méně než 40)") | (
+                              age_stats.vek_txt == "40 až 45 (více nebo rovno 40 a méně než 45)") | (
+                              age_stats.vek_txt == "45 až 50 (více nebo rovno 45 a méně než 50)") | (
+                              age_stats.vek_txt == "50 až 55 (více nebo rovno 50 a méně než 55)") | (
+                              age_stats.vek_txt == "55 až 60 (více nebo rovno 55 a méně než 60)"), "vek_txt"] = 2
 
         age_stats.loc[(age_stats.vek_txt == "60 až 65 (více nebo rovno 60 a méně než 65)") | (
-                    age_stats.vek_txt == "65 až 70 (více nebo rovno 65 a méně než 70)") | (
-                                  age_stats.vek_txt == "70 až 75 (více nebo rovno 70 a méně než 75)") | (
-                                  age_stats.vek_txt == "75 až 80 (více nebo rovno 75 a méně než 80)") | (
-                                  age_stats.vek_txt == "80 až 85 (více nebo rovno 80 a méně než 85)") | (
-                                  age_stats.vek_txt == "85 až 90 (více nebo rovno 85 a méně než 90)") | (
-                                  age_stats.vek_txt == "90 až 95 (více nebo rovno 90 a méně než 95)") | (
-                                  age_stats.vek_txt == "Od 95 (více nebo rovno 95)"), "vek_txt"] = 3
+                age_stats.vek_txt == "65 až 70 (více nebo rovno 65 a méně než 70)") | (
+                              age_stats.vek_txt == "70 až 75 (více nebo rovno 70 a méně než 75)") | (
+                              age_stats.vek_txt == "75 až 80 (více nebo rovno 75 a méně než 80)") | (
+                              age_stats.vek_txt == "80 až 85 (více nebo rovno 80 a méně než 85)") | (
+                              age_stats.vek_txt == "85 až 90 (více nebo rovno 85 a méně než 90)") | (
+                              age_stats.vek_txt == "90 až 95 (více nebo rovno 90 a méně než 95)") | (
+                              age_stats.vek_txt == "Od 95 (více nebo rovno 95)"), "vek_txt"] = 3
 
         # sum stats for each age group (1, 2, 3)
         age_stats = age_stats.groupby(['vek_txt', 'vuzemi_txt']).sum().reset_index()  # dataframe
