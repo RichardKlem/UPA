@@ -314,7 +314,7 @@ class DataVisualizer:
         plt.ylabel("Počet nakažených [%]")
         plt.title("Dotaz B2-1 - porovnání počtu nakažených Hlavního města Prahy a ČR")
         handles = [plt.Rectangle((0, 0), 1, 1, color='r'), plt.Rectangle((0, 0), 1, 1, color='#696969')]
-        plt.legend(handles, ("Hlavní město Praha", "Česká Republika"), bbox_to_anchor=(1.04, 0.5), loc="center left")
+        plt.legend(handles, ("Hlavní město Praha", "Česká Republika"), bbox_to_anchor=(0.02, 0.98), loc="upper left")
 
         ax.bar_label(bar_choosed_county, fmt='%.2f')
         ax.bar_label(bar_all_counties, fmt='%.2f')
@@ -340,7 +340,7 @@ class DataVisualizer:
         plt.ylabel("Počet zemřelých [%]")
         plt.title("Dotaz B2-2 - porovnání počtu zemřelých Hlavního města Prahy a ČR")
         handles = [plt.Rectangle((0, 0), 1, 1, color='#212121'), plt.Rectangle((0, 0), 1, 1, color='#696969')]
-        plt.legend(handles, ("Hlavní město Praha", "Česká Republika"), bbox_to_anchor=(1.04, 0.5), loc="center left")
+        plt.legend(handles, ("Hlavní město Praha", "Česká Republika"), bbox_to_anchor=(0.02, 0.98), loc="upper left")
 
         ax.bar_label(bar_choosed_county, fmt='%.3f')
         ax.bar_label(bar_all_counties, fmt='%.3f')
@@ -366,7 +366,7 @@ class DataVisualizer:
         plt.ylabel("Počet očkovaných [%]")
         plt.title("Dotaz B2-3 - porovnání počtu očkovaných Hlavního města Prahy a ČR")
         handles = [plt.Rectangle((0, 0), 1, 1, color='#1E90FF'), plt.Rectangle((0, 0), 1, 1, color='#696969')]
-        plt.legend(handles, ("Hlavní město Praha", "Česká Republika"), bbox_to_anchor=(1.04, 0.5), loc="center left")
+        plt.legend(handles, ("Hlavní město Praha", "Česká Republika"), bbox_to_anchor=(0.02, 0.98), loc="upper left")
 
         ax.bar_label(bar_choosed_county, fmt='%.1f')
         ax.bar_label(bar_all_counties, fmt='%.1f')
