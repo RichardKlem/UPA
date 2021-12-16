@@ -476,7 +476,7 @@ class DataVisualizer:
         print("DONE")
 
     def visualizeV2(self, output_path, infected_path):
-        print("Creating graph V1... ", end="", flush=True)
+        print("Creating graph V2... ", end="", flush=True)
 
         infected = pd.read_csv(infected_path)
 
@@ -501,10 +501,12 @@ class DataVisualizer:
         plt.plot(men.index.tolist(), men.values, "b", label="Muži")
         plt.plot(women.index.tolist(), women.values, "r", label="Ženy")
 
-        plt.ylabel("Počet nakažených [%]")
+        plt.ylabel("Počet nakažených [%]", fontsize=14)
+        plt.xlabel("Datum", fontsize=14)
         plt.xticks(rotation=45)
-        plt.title("Dotaz V2 - vývoj poměru nakažených jednotlivých pohlaví")
+        plt.title("Dotaz V2 - vývoj poměru nakažených pro jednotlivá pohlaví", fontsize=16)
         plt.legend(bbox_to_anchor=(0.02, 0.98), loc="upper left")
+        plt.grid(axis='y', linestyle='--')
 
         plt.savefig(output_path, bbox_inches="tight")
         plt.close("all")
