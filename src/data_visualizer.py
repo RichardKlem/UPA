@@ -2,6 +2,9 @@ import pandas as pd
 from data_files import data_files
 import matplotlib.pyplot as plt
 import numpy as np
+import seaborn as sns
+
+pd.options.mode.chained_assignment = None
 
 
 def get_12_last_months_dates(start_month_date):
@@ -371,6 +374,98 @@ class DataVisualizer:
         plt.close("all")
 
         print("DONE")
+
+    # source: https://stackoverflow.com/questions/43214978/seaborn-barplot-displaying-values
+    # author: Secant Zhang
+    # Date: Jun 26 '19 at 21:02
+    def show_values_on_bars(self, axs, h_v="v", space=0.4):
+        def _show_on_single_plot(ax):
+            if h_v == "v":
+                for p in ax.patches:
+                    _x = p.get_x() + p.get_width() / 2
+                    _y = p.get_y() + p.get_height()
+                    value = int(p.get_height())
+                    ax.text(_x, _y, value, ha="center")
+            elif h_v == "h":
+                for p in ax.patches:
+                    _x = p.get_x() + p.get_width() + float(space)
+                    _y = p.get_y() + p.get_height()-0.3
+                    value = float(p.get_width())
+                    ax.text(_x, _y, value, ha="left", weight='bold')
+
+        if isinstance(axs, np.ndarray):
+            for idx, ax in np.ndenumerate(axs):
+                _show_on_single_plot(ax)
+        else:
+            _show_on_single_plot(axs)
+
+
+    def visualizeOwn(self, output_path, people_path, population_path, municipalities_path, district="Brno-město"):
+        ###########################################################
+        # edit zadani, ne za posledni rok ale za life time covidu #
+        ###########################################################
+        print("Creating graph V1... ", end="", flush = True)
+
+        # gets data from the files
+        df_people = pd.read_csv(people_path)
+        df_pop = pd.read_csv(population_path)
+        df_muni = pd.read_csv(municipalities_path)
+
+        # gets lau code by the name of the district
+        lau_kod = df_muni.loc[df_muni['okres_nazev'] == district, "okres_lau_kod"].iloc[0]
+
+        # removing data that are not valid for our district
+        df_infected = df_people.loc[df_people["okres_lau_kod"] == lau_kod]
+
+        # splits data into age intervals
+        df_infected["vek_skupina"] = pd.cut(df_infected.vek, [0,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95,float('inf')], include_lowest=True)
+        df_infected = df_infected.groupby(["vek_skupina"])["vek_skupina"].count().reset_index(name = "pocet")
+
+        # renaming values that were not well written
+        df_pop["vek_txt"] = df_pop["vek_txt"].replace({'5 až 10 (více nebo rovno 5 a méně než 10)':'05 až 10 (více nebo rovno 5 a méně než 10)'})
+
+        # removes duplicate values
+        df_pop = df_pop.loc[df_pop["vuzemi_txt"] == district].loc[df_pop["pohlavi_txt"].isna()].loc[df_pop.vek_txt.notnull()].loc[df_pop.casref_do == "2020-12-31"]
+
+        # group by the values
+        df_pop = df_pop.groupby(["vek_txt"])["hodnota"].sum().reset_index(name = "pocet")
+
+        # redefining the data type
+        df_infected = df_infected.astype({'pocet': 'float64'})
+
+        # calculates the percentage of the values
+        for i in range(len(df_pop.index)):
+            result = round((df_infected.iloc[[i]].pocet / df_pop.iloc[[i]].pocet)*100, 2)
+            df_infected.loc[i:i, 'pocet'] = result
+
+        # lables for the chart
+        labels = ["0-5","5-10","10-15",
+                  "15-20","20-25","25-30",
+                  "30-35","35-40","40-45",
+                  "45-50","50-55","55-60",
+                  "60-65","65-70","70-75",
+                  "75-80","80-85","85-90",
+                  "90-95",">95"]
+
+        fig, ax = plt.subplots(1, 1, figsize=(7, 10), constrained_layout=True)
+
+        # sets the data for the chart
+        sns.barplot(palette = "viridis",
+                    data=df_infected,
+                    x=df_infected.pocet,
+                    y=df_infected.vek_skupina,
+                    ax=ax).set_title("Nakažení podle věkových skupin", fontsize=20, pad=10)
+
+        # chart plotting
+        ax.set(ylabel="Věk", xlabel="Nakaženžých [%]")
+        ax.set_yticklabels(labels)
+
+        # sets the values on the bars
+        self.show_values_on_bars(ax, "h", -2.2)
+
+        fig.savefig(output_path)
+
+        plt.close(fig)
 
 
     def visualizeV2(self, output_path, infected_path):
