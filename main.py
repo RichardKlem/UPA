@@ -52,9 +52,9 @@ if __name__ == "__main__":
     # Creates graphs which answer questions A1, A3, B2, V1 and V2. Furthermore it
     # prepares data for data mining task C1.
     if not skip_visualize:
+        os.makedirs("graphs", exist_ok=True)
         visualizer = DataVisualizer()
-        visualizer.visualizeA1( "graphs/A1-statistiky.png",
-                                "graphs/A1-testy.png",
+        visualizer.visualizeA1( "graphs/A1-vyvoj_situace.png",
                                 "data-part2/A1-hospitalizace.csv",
                                 "data-part2/A1-osoby.csv",
                                 "data-part2/A1-kraj-okres-testy.csv",
