@@ -101,39 +101,54 @@ class DataVisualizer:
         cured = cured[(cured.datum != '2021-12')]
 
         # sum value in month
-        hospitalized = hospitalized.groupby('datum', as_index=False).sum()  # dataframe
+        hospitalized = hospitalized.groupby('datum', as_index=False).mean()  # dataframe
         infected = infected.groupby('datum').size()  # series
         tests = tests.groupby('datum', as_index=False).sum()  # dataframe
         cured = cured.groupby('datum').size()  # series
 
-        fig = plt.figure(figsize=(10, 10))
-        ax1: plt.Axes = fig.add_subplot(2, 1, 1)
-        ax2: plt.Axes = fig.add_subplot(2, 1, 2)
+        # Dump CSVs
+        hospitalized.to_csv("dumps/dump_A1_hospitalized.csv")
+        infected.to_csv("dumps/dump_A1_infected.csv")
+        tests.to_csv("dumps/dump_A1_tests.csv")
+        cured.to_csv("dumps/dump_A1_cured.csv")
+
+        fig = plt.figure(figsize=(10, 15))
+        ax1: plt.Axes = fig.add_subplot(3, 1, 1)
+        ax2: plt.Axes = fig.add_subplot(3, 1, 2)
+        ax3: plt.Axes = fig.add_subplot(3, 1, 3)
 
         plt.ticklabel_format(style='plain')
 
         # First subplot - hospitalized, infected, cured
-        ax1.plot(hospitalized["datum"], hospitalized["pocet_hosp"], label="Počet hospitalizovaných")
         ax1.plot(infected.index.tolist(), infected.values, label="Počet nakažených")
         ax1.plot(cured.index.tolist(), cured.values, label="Počet vyléčených")
 
         ax1.set_title("Dotaz A1 - vývoj COVID situace")
+        ax1.set_title("Počet nakažených a vyléčených", fontsize=16)
         ax1.tick_params(axis="x", rotation=45)
-        ax1.set_ylabel("Počet")
+        ax1.set_ylabel("Počet", fontsize=13)
         ax1.set_xlabel("Datum")
         ax1.get_yaxis().set_major_formatter(plt.FuncFormatter(lambda y, p: format(int(y), ',')))
         ax1.grid(axis='y', linestyle='--')
         ax1.legend(bbox_to_anchor=(0.02, 0.98), loc="upper left")
 
-        # Second subplot - tests
-        ax2.plot(tests["datum"], tests["prirustkovy_pocet_testu_okres"], label="Počet provedených testů")
-
-        ax2.set_title("Počty provedených testů")
+        # Second subplot - hospitalized
+        ax2.plot(hospitalized["datum"], hospitalized["pocet_hosp"], label="Počet hospitalizovaných")
+        ax2.set_title("Počty hospitalizovaných", fontsize=16)
         ax2.tick_params(axis="x", rotation=45)
-        ax2.set_ylabel("Počet")
+        ax2.set_ylabel("Počet", fontsize=13)
         ax2.set_xlabel("Datum")
         ax2.get_yaxis().set_major_formatter(plt.FuncFormatter(lambda y, p: format(int(y), ',')))
         ax2.grid(axis='y', linestyle='--')
+
+        # Third subplot - tests
+        ax3.plot(tests["datum"], tests["prirustkovy_pocet_testu_okres"], label="Počet provedených testů")
+        ax3.set_title("Počty provedených testů", fontsize=16)
+        ax3.tick_params(axis="x", rotation=45)
+        ax3.set_ylabel("Počet", fontsize=13)
+        ax3.set_xlabel("Datum")
+        ax3.get_yaxis().set_major_formatter(plt.FuncFormatter(lambda y, p: format(int(y), ',')))
+        ax3.grid(axis='y', linestyle='--')
 
         fig.tight_layout()
         plt.savefig(output_path)
@@ -188,6 +203,11 @@ class DataVisualizer:
         vaccinated_sex["count"] = vaccinated_sex["count"] / 1000
         vaccinated_sex['count'] = vaccinated_sex['count'].astype(int)
 
+        vaccinated_all.to_csv("dumps/dump_A3_vaccinated_all.csv")
+        vaccinated_sex_age.to_csv("dumps/dump_A3_vaccinated_sex_age.csv")
+        vaccinated_age.to_csv("dumps/dump_A3_vaccinated_age.csv")
+        vaccinated_sex.to_csv("dumps/dump_A3_vaccinated_sex.csv")
+
         # -- Plotting -------
         # ---- First plot----
         fig: plt.Figure = plt.figure(figsize=(8, 9))
@@ -216,8 +236,7 @@ class DataVisualizer:
         ax2.grid(axis='y', linestyle='--')
         ax2.set_axisbelow(True)
         ax2.set_title("Počty provedených očkování v jednotlivých krajích podle pohlaví")
-        patches = [Patch(color="tab:red", label="Ženy"),
-                   Patch(color="tab:blue", label="Muži")]
+        patches = [Patch(color="tab:red", label="Ženy"), Patch(color="tab:blue", label="Muži")]
         ax2.legend(title="Pohlaví", handles=patches, loc="upper right")
         ax2.set_ylim(top=ax2.get_ylim()[1] * 1.05)
 
@@ -438,7 +457,7 @@ class DataVisualizer:
             {'5 až 10 (více nebo rovno 5 a méně než 10)': '05 až 10 (více nebo rovno 5 a méně než 10)'})
 
         # removes duplicate values
-        df_pop = df_pop.loc[df_pop["vuzemi_txt"] == district].loc[df_pop["pohlavi_txt"].isna()].loc[
+        df_pop = df_pop.loc[df_pop["vuzemi_txt"] == district].loc[df_pop["pohlavi_kod"].isna()].loc[
             df_pop.vek_txt.notnull()].loc[df_pop.casref_do == "2020-12-31"]
 
         # group by the values
@@ -459,15 +478,17 @@ class DataVisualizer:
         fig, ax = plt.subplots(1, 1, figsize=(7, 10), constrained_layout=True)
 
         # sets the data for the chart
-        sns.barplot(palette="viridis", data=df_infected, x=df_infected.pocet, y=df_infected.vek_skupina,
-                    ax=ax).set_title("Nakažení podle věkových skupin", fontsize=20, pad=10)
+        df_infected.to_csv("dumps/dump_V1.csv")
+        sns.barplot(color="skyblue", data=df_infected, x=df_infected.pocet, y=df_infected.vek_skupina, ax=ax).set_title(
+            "Nakažení podle věkových skupin", fontsize=20, pad=10)
 
         # chart plotting
-        ax.set(ylabel="Věk", xlabel="Nakaženžých [%]")
+        ax.set_xlabel("Nakažených [%]", fontsize=15)
+        ax.set_ylabel("Věková skupina", fontsize=15)
         ax.set_yticklabels(labels)
 
         # sets the values on the bars
-        self.show_values_on_bars(ax, "h", -2.2)
+        self.show_values_on_bars(ax, "h", -3)
 
         fig.savefig(output_path)
 
@@ -489,6 +510,9 @@ class DataVisualizer:
 
         men = men.groupby('datum').size()  # series
         women = women.groupby('datum').size()  # series
+
+        men.to_csv("dumps/dump_V2_men.csv")
+        women.to_csv("dumps/dump_V2_women.csv")
 
         all_women = 10700000 / 1.95
         all_men = 10700000 - all_women
@@ -513,8 +537,8 @@ class DataVisualizer:
 
         print("DONE")
 
-    def visualizeC1(self, output_csv, output_original_csv, infected_path, vaccinated_path,
-                    counties_stats_path, counties_codes_path, start_month):
+    def visualizeC1(self, output_csv, output_original_csv, infected_path, vaccinated_path, counties_stats_path,
+                    counties_codes_path, start_month):
         print("Creating data for C1... ", end="", flush=True)
 
         infected = pd.read_csv(infected_path)
@@ -549,21 +573,17 @@ class DataVisualizer:
 
         # replace date by 1, 2, 3 and 4 (quarters of the year)
         for df in [infected, vaccinated]:
-            df.loc[(df.datum == last_12_months_dates[0]) |
-                   (df.datum == last_12_months_dates[1]) |
-                   (df.datum == last_12_months_dates[2]), "datum"] = 4
+            df.loc[(df.datum == last_12_months_dates[0]) | (df.datum == last_12_months_dates[1]) | (
+                        df.datum == last_12_months_dates[2]), "datum"] = 4
 
-            df.loc[(df.datum == last_12_months_dates[3]) |
-                   (df.datum == last_12_months_dates[4]) |
-                   (df.datum == last_12_months_dates[5]), "datum"] = 3
+            df.loc[(df.datum == last_12_months_dates[3]) | (df.datum == last_12_months_dates[4]) | (
+                        df.datum == last_12_months_dates[5]), "datum"] = 3
 
-            df.loc[(df.datum == last_12_months_dates[6]) |
-                   (df.datum == last_12_months_dates[7]) |
-                   (df.datum == last_12_months_dates[8]), "datum"] = 2
+            df.loc[(df.datum == last_12_months_dates[6]) | (df.datum == last_12_months_dates[7]) | (
+                        df.datum == last_12_months_dates[8]), "datum"] = 2
 
-            df.loc[(df.datum == last_12_months_dates[9]) |
-                   (df.datum == last_12_months_dates[10]) |
-                   (df.datum == last_12_months_dates[11]), "datum"] = 1
+            df.loc[(df.datum == last_12_months_dates[9]) | (df.datum == last_12_months_dates[10]) | (
+                        df.datum == last_12_months_dates[11]), "datum"] = 1
 
             df.rename(columns={"datum": "quarter"}, inplace=True)
 
@@ -582,21 +602,10 @@ class DataVisualizer:
         # "casref_do" and "pohlavi_kod" columns are not needed anymore
         counties_stats.drop(['casref_do', 'pohlavi_kod'], axis=1, inplace=True)
 
-        to_remove = ["Česká republika",
-                     # "Hlavní město Praha", this is national county and also county (kraj i okres)
-                     "Středočeský kraj",
-                     "Jihočeský kraj",
-                     "Plzeňský kraj",
-                     "Karlovarský kraj",
-                     "Ústecký kraj",
-                     "Liberecký kraj",
-                     "Královéhradecký kraj",
-                     "Pardubický kraj",
-                     "Kraj Vysočina",
-                     "Jihomoravský kraj",
-                     "Olomoucký kraj",
-                     "Moravskoslezský kraj",
-                     "Zlínský kraj"]
+        to_remove = ["Česká republika", # "Hlavní město Praha", this is national county and also county (kraj i okres)
+                     "Středočeský kraj", "Jihočeský kraj", "Plzeňský kraj", "Karlovarský kraj", "Ústecký kraj",
+                     "Liberecký kraj", "Královéhradecký kraj", "Pardubický kraj", "Kraj Vysočina", "Jihomoravský kraj",
+                     "Olomoucký kraj", "Moravskoslezský kraj", "Zlínský kraj"]
 
         # remove rows that are not counties
         counties_stats.drop(counties_stats[counties_stats.vuzemi_txt.isin(to_remove)].index, inplace=True)
@@ -605,28 +614,28 @@ class DataVisualizer:
         age_stats = counties_stats[counties_stats.vek_txt.notna()].copy()
 
         # sort "vekova_skupina" into 3 categories -- 1-(0-24), 2-(25-59), 3-(60+)
-        age_stats.loc[(age_stats.vek_txt == "0 až 5 (více nebo rovno 0 a méně než 5)") |
-                      (age_stats.vek_txt == "5 až 10 (více nebo rovno 5 a méně než 10)") |
-                      (age_stats.vek_txt == "10 až 15 (více nebo rovno 10 a méně než 15)") |
-                      (age_stats.vek_txt == "15 až 20 (více nebo rovno 15 a méně než 20)") |
-                      (age_stats.vek_txt == "20 až 25 (více nebo rovno 20 a méně než 25)"), "vek_txt"] = 1
+        age_stats.loc[(age_stats.vek_txt == "0 až 5 (více nebo rovno 0 a méně než 5)") | (
+                    age_stats.vek_txt == "5 až 10 (více nebo rovno 5 a méně než 10)") | (
+                                  age_stats.vek_txt == "10 až 15 (více nebo rovno 10 a méně než 15)") | (
+                                  age_stats.vek_txt == "15 až 20 (více nebo rovno 15 a méně než 20)") | (
+                                  age_stats.vek_txt == "20 až 25 (více nebo rovno 20 a méně než 25)"), "vek_txt"] = 1
 
-        age_stats.loc[(age_stats.vek_txt == "25 až 30 (více nebo rovno 25 a méně než 30)") |
-                      (age_stats.vek_txt == "30 až 35 (více nebo rovno 30 a méně než 35)") |
-                      (age_stats.vek_txt == "35 až 40 (více nebo rovno 35 a méně než 40)") |
-                      (age_stats.vek_txt == "40 až 45 (více nebo rovno 40 a méně než 45)") |
-                      (age_stats.vek_txt == "45 až 50 (více nebo rovno 45 a méně než 50)") |
-                      (age_stats.vek_txt == "50 až 55 (více nebo rovno 50 a méně než 55)") |
-                      (age_stats.vek_txt == "55 až 60 (více nebo rovno 55 a méně než 60)"), "vek_txt"] = 2
+        age_stats.loc[(age_stats.vek_txt == "25 až 30 (více nebo rovno 25 a méně než 30)") | (
+                    age_stats.vek_txt == "30 až 35 (více nebo rovno 30 a méně než 35)") | (
+                                  age_stats.vek_txt == "35 až 40 (více nebo rovno 35 a méně než 40)") | (
+                                  age_stats.vek_txt == "40 až 45 (více nebo rovno 40 a méně než 45)") | (
+                                  age_stats.vek_txt == "45 až 50 (více nebo rovno 45 a méně než 50)") | (
+                                  age_stats.vek_txt == "50 až 55 (více nebo rovno 50 a méně než 55)") | (
+                                  age_stats.vek_txt == "55 až 60 (více nebo rovno 55 a méně než 60)"), "vek_txt"] = 2
 
-        age_stats.loc[(age_stats.vek_txt == "60 až 65 (více nebo rovno 60 a méně než 65)") |
-                      (age_stats.vek_txt == "65 až 70 (více nebo rovno 65 a méně než 70)") |
-                      (age_stats.vek_txt == "70 až 75 (více nebo rovno 70 a méně než 75)") |
-                      (age_stats.vek_txt == "75 až 80 (více nebo rovno 75 a méně než 80)") |
-                      (age_stats.vek_txt == "80 až 85 (více nebo rovno 80 a méně než 85)") |
-                      (age_stats.vek_txt == "85 až 90 (více nebo rovno 85 a méně než 90)") |
-                      (age_stats.vek_txt == "90 až 95 (více nebo rovno 90 a méně než 95)") |
-                      (age_stats.vek_txt == "Od 95 (více nebo rovno 95)"), "vek_txt"] = 3
+        age_stats.loc[(age_stats.vek_txt == "60 až 65 (více nebo rovno 60 a méně než 65)") | (
+                    age_stats.vek_txt == "65 až 70 (více nebo rovno 65 a méně než 70)") | (
+                                  age_stats.vek_txt == "70 až 75 (více nebo rovno 70 a méně než 75)") | (
+                                  age_stats.vek_txt == "75 až 80 (více nebo rovno 75 a méně než 80)") | (
+                                  age_stats.vek_txt == "80 až 85 (více nebo rovno 80 a méně než 85)") | (
+                                  age_stats.vek_txt == "85 až 90 (více nebo rovno 85 a méně než 90)") | (
+                                  age_stats.vek_txt == "90 až 95 (více nebo rovno 90 a méně než 95)") | (
+                                  age_stats.vek_txt == "Od 95 (více nebo rovno 95)"), "vek_txt"] = 3
 
         # sum stats for each age group (1, 2, 3)
         age_stats = age_stats.groupby(['vek_txt', 'vuzemi_txt']).sum().reset_index()  # dataframe
@@ -634,18 +643,9 @@ class DataVisualizer:
         # pick 50 counties with highest number of citizens
         choosed_counties_names = list(sum_stats.sort_values(by='hodnota', ascending=False).head(50)["vuzemi_txt"])
 
-        output_data = pd.DataFrame([], columns=["okres_nazev",
-                                                "4_nakazeni",
-                                                "3_nakazeni",
-                                                "2_nakazeni",
-                                                "1_nakazeni",
-                                                "4_ockovani",
-                                                "3_ockovani",
-                                                "2_ockovani",
-                                                "1_ockovani",
-                                                "0_14_vek",
-                                                "15_59_vek",
-                                                "60_vek"])
+        output_data = pd.DataFrame([], columns=["okres_nazev", "4_nakazeni", "3_nakazeni", "2_nakazeni", "1_nakazeni",
+                                                "4_ockovani", "3_ockovani", "2_ockovani", "1_ockovani", "0_14_vek",
+                                                "15_59_vek", "60_vek"])
 
         # remove duplicates and rows with missing values
         counties_codes.drop_duplicates(inplace=True)
@@ -673,21 +673,16 @@ class DataVisualizer:
 
         # for each choosed county load stats
         for county_name in choosed_counties_names:
-            row = {"okres_nazev": county_name,
-                   "4_nakazeni":
-                       infected.loc[(infected.quarter == 4) & (infected.okres_nazev == county_name), 'infected'].iloc[
-                           0],
+            row = {"okres_nazev": county_name, "4_nakazeni":
+                infected.loc[(infected.quarter == 4) & (infected.okres_nazev == county_name), 'infected'].iloc[0],
                    "3_nakazeni":
                        infected.loc[(infected.quarter == 3) & (infected.okres_nazev == county_name), 'infected'].iloc[
-                           0],
-                   "2_nakazeni":
+                           0], "2_nakazeni":
                        infected.loc[(infected.quarter == 2) & (infected.okres_nazev == county_name), 'infected'].iloc[
-                           0],
-                   "1_nakazeni":
+                           0], "1_nakazeni":
                        infected.loc[(infected.quarter == 1) & (infected.okres_nazev == county_name), 'infected'].iloc[
-                           0],
-                   "4_ockovani": vaccinated.loc[
-                       (vaccinated.quarter == 4) & (vaccinated.okres_nazev == county_name), 'vaccinated'].iloc[0],
+                           0], "4_ockovani": vaccinated.loc[
+                    (vaccinated.quarter == 4) & (vaccinated.okres_nazev == county_name), 'vaccinated'].iloc[0],
                    "3_ockovani": vaccinated.loc[
                        (vaccinated.quarter == 3) & (vaccinated.okres_nazev == county_name), 'vaccinated'].iloc[0],
                    "2_ockovani": vaccinated.loc[
@@ -696,11 +691,9 @@ class DataVisualizer:
                        (vaccinated.quarter == 1) & (vaccinated.okres_nazev == county_name), 'vaccinated'].iloc[0],
                    "0_14_vek":
                        age_stats.loc[(age_stats.vek_txt == 1) & (age_stats.vuzemi_txt == county_name), 'hodnota'].iloc[
-                           0],
-                   "15_59_vek":
+                           0], "15_59_vek":
                        age_stats.loc[(age_stats.vek_txt == 2) & (age_stats.vuzemi_txt == county_name), 'hodnota'].iloc[
-                           0],
-                   "60_vek":
+                           0], "60_vek":
                        age_stats.loc[(age_stats.vek_txt == 3) & (age_stats.vuzemi_txt == county_name), 'hodnota'].iloc[
                            0]}
 
@@ -729,7 +722,7 @@ class DataVisualizer:
             for x in outliers:
                 # substitue each outlier by mean value of non-outlier values of the column
                 output_data.loc[output_data[column_name] == x, column_name] = \
-                output_data[~output_data[column_name].isin(outliers)][column_name].mean()
+                    output_data[~output_data[column_name].isin(outliers)][column_name].mean()
 
         # normalize values by min-man method
         for column_name in ["4_nakazeni", "3_nakazeni", "2_nakazeni", "1_nakazeni", "4_ockovani", "3_ockovani",
