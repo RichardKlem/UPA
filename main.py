@@ -16,8 +16,8 @@ if __name__ == "__main__":
     redownload_data = True
     skip_insert = True
     reinsert_data = True
-    skip_data_extraction = False
-    skip_visualize = True
+    skip_data_extraction = True
+    skip_visualize = False
 
     if not skip_download:
         Handler = DataHandler(data_folder=data_folder, list_of_files=selected_files, redownload=redownload_data)
@@ -72,3 +72,9 @@ if __name__ == "__main__":
                                 "data-part2/B2-umrti.csv",
                                 "data-part2/B2-ockovani-profese.csv",
                                 "2021-11")
+
+        visualizer.visualizeOwn("graphs/V1-nakazenych-podle-veku.png",
+                                "data/osoby.csv",
+                                "data/130142-21data043021.csv",
+                                "data/obce.csv",
+                                "Opava")
