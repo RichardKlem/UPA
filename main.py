@@ -72,10 +72,10 @@ if __name__ == "__main__":
                                 "data-part2/B2-ockovani-profese.csv",
                                 "2021-11")
 
-        visualizer.visualizeOwn("graphs/V1-nakazenych-podle-veku.png",
-                                "data/osoby.csv",
-                                "data/130142-21data043021.csv",
-                                "data/obce.csv",
+        visualizer.visualizeV1("graphs/V1-nakazenych-podle-veku.png",
+                                "data-part2/V1-osoby.csv",
+                                "data-part2/V1-130142-21data043021.csv",
+                                "data-part2/V1-obce.csv",
                                 "Opava")
 
         visualizer.visualizeV2( "graphs/V2-nakazeni.png",

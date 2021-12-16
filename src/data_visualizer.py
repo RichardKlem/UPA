@@ -429,7 +429,7 @@ class DataVisualizer:
         else:
             _show_on_single_plot(axs)
 
-    def visualizeOwn(self, output_path, people_path, population_path, municipalities_path, district="Brno-město"):
+    def visualizeV1(self, output_path, people_path, population_path, municipalities_path, district="Brno-město"):
         ###########################################################
         # edit zadani, ne za posledni rok ale za life time covidu #
         ###########################################################
