@@ -75,3 +75,10 @@ if __name__ == "__main__":
 
         visualizer.visualizeV2( "graphs/V2-nakazeni.png",
                                 "data-part2/V2-osoby.csv")
+
+        visualizer.visualizeC1( "data-mining/C1-data.csv",
+                                "data-part2/C1-osoby.csv",
+                                "data-part2/C1-ockovani-profese.csv",
+                                "data-part2/C1-130142-21data043021.csv",
+                                "data-part2/C1-obce.csv",
+                                "2021-11")
