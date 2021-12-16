@@ -17,7 +17,7 @@ if __name__ == "__main__":
     skip_insert = True
     reinsert_data = True
     skip_data_extraction = False
-    skip_visualize = True
+    skip_visualize = False
 
     if not skip_download:
         Handler = DataHandler(data_folder=data_folder, list_of_files=selected_files, redownload=redownload_data)
@@ -82,6 +82,7 @@ if __name__ == "__main__":
                                 "data-part2/V2-osoby.csv")
 
         visualizer.visualizeC1( "data-mining/C1-data.csv",
+                                "data-mining/C1-data-bez-uprav.csv",
                                 "data-part2/C1-osoby.csv",
                                 "data-part2/C1-ockovani-profese.csv",
                                 "data-part2/C1-130142-21data043021.csv",

@@ -513,8 +513,8 @@ class DataVisualizer:
 
         print("DONE")
 
-    def visualizeC1(self, output_csv, infected_path, vaccinated_path, counties_stats_path, counties_codes_path,
-                    start_month):
+    def visualizeC1(self, output_csv, output_original_csv, infected_path, vaccinated_path,
+                    counties_stats_path, counties_codes_path, start_month):
         print("Creating data for C1... ", end="", flush=True)
 
         infected = pd.read_csv(infected_path)
@@ -705,6 +705,8 @@ class DataVisualizer:
                            0]}
 
             output_data = output_data.append(row, ignore_index=True)
+
+        output_data.to_csv(output_original_csv, index=False)
 
         # transform data from total number of infected/vaccinated to number of
         # infected/vaccinated per 1000 citizens for each county
