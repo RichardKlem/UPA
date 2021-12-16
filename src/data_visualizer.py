@@ -465,6 +465,9 @@ class DataVisualizer:
 
         plt.close(fig)
 
+        print("DONE")
+
+
     def visualizeV2(self, output_path, infected_path):
         print("Creating graph V1... ", end="", flush=True)
 
