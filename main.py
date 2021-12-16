@@ -53,6 +53,7 @@ if __name__ == "__main__":
     # prepares data for data mining task C1.
     if not skip_visualize:
         os.makedirs("graphs", exist_ok=True)
+        os.makedirs("dumps", exist_ok=True)
         visualizer = DataVisualizer()
         visualizer.visualizeA1( "graphs/A1-vyvoj_situace.png",
                                 "data-part2/A1-hospitalizace.csv",
