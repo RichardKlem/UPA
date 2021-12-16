@@ -75,6 +75,12 @@ class DataVisualizer:
         tests['datum'] = tests['datum'].str[:-3]
         cured['datum'] = cured['datum'].str[:-3]
 
+        hospitalized = hospitalized[(hospitalized.datum != '2021-12')]
+        infected = infected[(infected.datum != '2021-12')]
+        tests = tests[(tests.datum != '2021-12')]
+        cured = cured[(cured.datum != '2021-12')]
+
+
         # sum value in month
         hospitalized = hospitalized.groupby('datum', as_index=False).sum() # dataframe
         infected = infected.groupby('datum').size() # series
