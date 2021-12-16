@@ -60,9 +60,8 @@ if __name__ == "__main__":
                                 "data-part2/A1-kraj-okres-testy.csv",
                                 "data-part2/A1-vyleceni.csv")
 
-        visualizer.visualizeA3( "graphs/A3-kraje.png",
-                                "graphs/A3-pohlavi.png",
-                                "graphs/A3-vek.png",
+        visualizer.visualizeA3( "graphs/A3-kraje-a-pohlavi.png",
+                                "graphs/A3-pohlavi-a-vek.png",
                                 "data-part2/A3-ockovani-profese.csv")
 
         visualizer.visualizeB2( "graphs/B2-nakazeni.png",
