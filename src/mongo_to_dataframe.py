@@ -34,7 +34,7 @@ sources = {
     },
 
     "C1-osoby": {
-        "columns": ["datum", "vek", "kraj_nuts_kod", "okres_lau_kod"]
+        "columns": ["datum", "okres_lau_kod"]
     },
     "C1-ockovani-profese": {
         "columns": ["datum", "vekova_skupina", "poradi_davky", "vakcina", "kraj_nuts_kod", "orp_bydliste_kod"]
