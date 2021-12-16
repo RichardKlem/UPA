@@ -78,6 +78,12 @@ class DataVisualizer:
         tests['datum'] = tests['datum'].str[:-3]
         cured['datum'] = cured['datum'].str[:-3]
 
+        hospitalized = hospitalized[(hospitalized.datum != '2021-12')]
+        infected = infected[(infected.datum != '2021-12')]
+        tests = tests[(tests.datum != '2021-12')]
+        cured = cured[(cured.datum != '2021-12')]
+
+
         # sum value in month
         hospitalized = hospitalized.groupby('datum', as_index=False).sum() # dataframe
         infected = infected.groupby('datum').size() # series
@@ -379,7 +385,7 @@ class DataVisualizer:
                     _x = p.get_x() + p.get_width() / 2
                     _y = p.get_y() + p.get_height()
                     value = int(p.get_height())
-                    ax.text(_x, _y, value, ha="center") 
+                    ax.text(_x, _y, value, ha="center")
             elif h_v == "h":
                 for p in ax.patches:
                     _x = p.get_x() + p.get_width() + float(space)
@@ -417,10 +423,10 @@ class DataVisualizer:
 
         # renaming values that were not well written
         df_pop["vek_txt"] = df_pop["vek_txt"].replace({'5 až 10 (více nebo rovno 5 a méně než 10)':'05 až 10 (více nebo rovno 5 a méně než 10)'})
-        
+
         # removes duplicate values
         df_pop = df_pop.loc[df_pop["vuzemi_txt"] == district].loc[df_pop["pohlavi_txt"].isna()].loc[df_pop.vek_txt.notnull()].loc[df_pop.casref_do == "2020-12-31"]
-        
+
         # group by the values
         df_pop = df_pop.groupby(["vek_txt"])["hodnota"].sum().reset_index(name = "pocet")
 
@@ -440,25 +446,60 @@ class DataVisualizer:
                   "60-65","65-70","70-75",
                   "75-80","80-85","85-90",
                   "90-95",">95"]
-        
+
         fig, ax = plt.subplots(1, 1, figsize=(7, 10), constrained_layout=True)
 
         # sets the data for the chart
         sns.barplot(palette = "viridis",
-                    data=df_infected, 
-                    x=df_infected.pocet, 
-                    y=df_infected.vek_skupina, 
+                    data=df_infected,
+                    x=df_infected.pocet,
+                    y=df_infected.vek_skupina,
                     ax=ax).set_title("Nakažení podle věkových skupin", fontsize=20, pad=10)
-        
-        # chart plotting        
+
+        # chart plotting
         ax.set(ylabel="Věk", xlabel="Nakaženžých [%]")
         ax.set_yticklabels(labels)
-        
+
         # sets the values on the bars
         self.show_values_on_bars(ax, "h", -2.2)
-        
+
         fig.savefig(output_path)
 
         plt.close(fig)
+
+
+    def visualizeV2(self, output_path, infected_path):
+        print("Creating graph V1... ", end="", flush = True)
+
+        infected = pd.read_csv(infected_path)
+
+        infected['datum'] = infected['datum'].str[:-3]
+
+        infected = infected[(infected.datum != '2021-12')]
+
+        men = infected[(infected.pohlavi != 'M')]
+        women = infected[(infected.pohlavi != 'Z')]
+
+        men = men.groupby('datum').size() # series
+        women = women.groupby('datum').size() # series
+
+        all_women = 10700000 / 1.95
+        all_men = 10700000 - all_women
+
+        men = men.multiply(100/all_men)
+        women = women.multiply(100/all_women)
+
+        # add data
+        plt.figure(figsize=(10, 5))
+        plt.plot(men.index.tolist(), men.values, "b", label = "Muži")
+        plt.plot(women.index.tolist(), women.values, "r", label = "Ženy")
+
+        plt.ylabel("Počet nakažených [%]")
+        plt.xticks(rotation=45)
+        plt.title("Dotaz V2 - vývoj poměru nakažených jednotlivých pohlaví")
+        plt.legend(bbox_to_anchor=(0.02, 0.98), loc="upper left")
+
+        plt.savefig(output_path, bbox_inches="tight")
+        plt.close("all")
 
         print("DONE")

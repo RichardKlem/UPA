@@ -40,10 +40,10 @@ sources = {
         "columns": ["datum", "vekova_skupina", "poradi_davky", "vakcina", "kraj_nuts_kod", "orp_bydliste_kod"]
     },
     "C1-obce": {
-        "columns": ["kraj_nuts_kod", "kraj_nazev", "okres_lau_kod", "orp_kod"]
+        "columns": ["kraj_nuts_kod", "kraj_nazev", "okres_nazev", "okres_lau_kod", "orp_kod"]
     },
     "C1-130142-21data043021": {
-        "columns": ["hodnota", "vek_txt", "vuzemi_txt"]
+        "columns": ["hodnota", "vek_txt", "vuzemi_txt", "casref_do", "pohlavi_kod"]
     },
 
     "V1-osoby": {
@@ -53,7 +53,7 @@ sources = {
         "columns": ["okres_lau_kod", "okres_nazev"]
     },
     "V1-130142-21data043021": {
-        "columns": ["hodnota", "vek_txt", "vuzemi_txt"]
+        "columns": ["hodnota", "vek_txt", "vuzemi_txt", "casref_do", "pohlavi_kod"]
     },
 
     "V2-osoby": {
